@@ -72,6 +72,10 @@ define_yaku yaku, "Pinfu", 1, @closed_hand
   and ((won_by_draw and minipoints_equals(20)) or (not_won_by_draw and minipoints_equals(30)))
 define_yaku yaku, "Tanyao", 1, winning_hand_consists_of("2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s")
 define_yaku yaku, "Iipeikou", 1, @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
+define_set static_site_hosting, ~s"4p 5p 3s"
+define_yaku yaku, "Static Site Hosting", 1,
+  match(["hand", "calls", "winning_tile"], ["standard_win"])
+  and match(["hand", "calls", "winning_tile"], ~m"static_site_hosting:1")
 define_yaku yaku, "Haku", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
 define_yaku yaku, "Hatsu", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
 define_yaku yaku, "Chun", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
@@ -791,7 +795,7 @@ define_mod chombo, conflicts: ["calls_are_forced"], name: "Chombo", desc: "The t
 define_mod riichi_en, name: "English Yaku Names", desc:  "Display English yaku names. (e.g. Tanyao -> All Simples)"
 
 set default_mods, [
-  "honba", "yaku/riichi", "dora", "ura", "kandora", "aka",
+  "honba", "yaku/riichi", "dora", "ura", "kandora",
   "yaku/ippatsu",
   "nagashi",
   "tobi",

@@ -1,0 +1,19 @@
+services:
+  riichi-advanced:
+    build: .
+    environment:
+      MIX_ENV: dev
+      HTTP_PORT: "4000"
+      DISABLE_HTTPS: "true"
+    ports:
+      - "4000:4000"
+    volumes:
+      - .:/app
+      - deps:/app/deps
+      - build:/app/_build
+      - node_modules:/app/assets/node_modules
+
+volumes:
+  deps:
+  build:
+  node_modules:

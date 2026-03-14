@@ -236,6 +236,7 @@ defmodule RiichiAdvanced.Constants do
   def ai_names, do: @ai_names
 
   @available_rulesets [
+    {"aws-mahjong",  "AWS Mahjong", "A custom AWS-themed mahjong ruleset."},
     {"riichi",       "Riichi", "The classic riichi ruleset, now with an assortment of mods to pick and choose at your liking."},
     {"sanma",        "Sanma", "Three-player Riichi."},
     {"space",        "Space Mahjong", "Riichi, but sequences can wrap (891, 912), and you can make sequences from winds and dragons. In addition, you can chii from any direction, and form open kokushi (3 han)."},
@@ -284,6 +285,24 @@ defmodule RiichiAdvanced.Constants do
       display_name: "Riichi",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/riichi.md",
       ruleset: "riichi",
+      globals: %{
+        chii_name: "Chii",
+        pon_name: "Pon",
+        kan_name: "Kan",
+        ankan_name: "Ankan",
+        han: "Han"
+      },
+      mods: [
+        "global_mods",
+        "standard_wall",
+        "default_auto_buttons",
+        "riichi_kan"
+      ],
+      default_mods: []
+    },
+    "aws-mahjong" => %{
+      display_name: "AWS Mahjong",
+      ruleset: "aws-mahjong",
       globals: %{
         chii_name: "Chii",
         pon_name: "Pon",

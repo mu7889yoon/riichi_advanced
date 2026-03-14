@@ -236,31 +236,8 @@ defmodule RiichiAdvanced.Constants do
   def ai_names, do: @ai_names
 
   @available_rulesets [
-    {"aws-mahjong",  "AWS Mahjong", "A custom AWS-themed mahjong ruleset."},
     {"riichi",       "Riichi", "The classic riichi ruleset, now with an assortment of mods to pick and choose at your liking."},
-    {"sanma",        "Sanma", "Three-player Riichi."},
-    {"space",        "Space Mahjong", "Riichi, but sequences can wrap (891, 912), and you can make sequences from winds and dragons. In addition, you can chii from any direction, and form open kokushi (3 han)."},
-    {"cosmic",       "Cosmic Riichi", "A Space Mahjong variant with mixed triplets, more yaku, and more calls."},
-    {"galaxy",       "Galaxy Mahjong", "Riichi, but one of each tile is replaced with a blue galaxy tile that acts as a wildcard of its number. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."},
-    {"kansai",       "Kansai Sanma", "Sanma, but you draw until the last visible dora indicator. In addition, all fives are akadora, fu is fixed at 30, there is no tsumo loss, and scores are rounded to the nearest 1000. Flowers act as nukidora in place of north winds, which are now yakuhai. Exhaustive draws in south round always result in a repeat regardless of who's tenpai."},
-    {"chinitsu",     "Chinitsu", "Two-player variant where the only tiles are bamboo tiles. Try not to chombo!"},
-    {"minefield",    "Minefield", "Two-player variant where you start with 34 tiles to make a mangan+ hand, and your remaining tiles are your discards."},
-    {"saki",         "Sakicards v1.3", "Riichi, but everyone gets a different Saki power, which changes the game quite a bit. Some give you bonus han every time you use your power. Some let you recover dead discards. Some let you swap tiles around the entire board, including the dora indicator."},
-    {"hk",           "Hong Kong", "Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers."},
-    {"sichuan",      "Sichuan Bloody", "Sichuan Bloody mahjong. Trade tiles, void a suit, and play until three players win (bloody end rules)."},
-    {"mcr",          "MCR", "Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi."},
-    {"taiwanese",    "Taiwanese", "16-tile mahjong with riichi mechanics."},
-    {"bloody30faan", "Bloody 30-Faan Jokers", "Bloody end rules mahjong, with Vietnamese jokers, and somehow more yaku than MCR."},
-    {"american",     "American (NMJL)", "American Mah-Jongg. Assemble hands with jokers, and declare other players' hands dead. Rules are slightly different from MJME 2024 (see rules page)."},
-    {"vietnamese",   "Vietnamese", "Mahjong with eight differently powerful joker tiles."},
-    {"malaysian",    "Malaysian", "Three-player mahjong with 16 flowers, a unique joker tile, and instant payouts."},
-    {"singaporean",  "Singaporean", "Mahjong with various instant payouts and various unique ways to get penalized by pao."},
-    {"classical",    "Chinese Classical", "Mahjong but every pung and kong gives you points, and every hand pattern doubles your points."},
-    {"fuzhou",       "Fuzhou", "16-tile mahjong with a version of dora that doesn't give you han, but becomes a unique winning condition by itself."},
-    {"tianjin",      "Tianjin", "Mahjong except the dora indicator actually indicates joker tiles."},
-    {"ningbo",       "Ningbo", "Includes Tianjin mahjong joker tiles, but adds more yaku and played with a 4-tai minimum."},
-    {"hefei",        "Hefei", "Mahjong with no honor tiles, but you must have at least eight tiles of a single suit to win."},
-    {"zung_jung",    "Zung Jung", "Mahjong with an additive (rather than multiplicative) scoring system."},
+    {"aws-mahjong",  "AWS Mahjong", "A custom AWS-themed mahjong ruleset."},
     {"custom",       "Custom", "Create and play your own custom ruleset."},
   ]
   @unimplemented_rulesets [
@@ -278,7 +255,7 @@ defmodule RiichiAdvanced.Constants do
   ]
 
   def available_rulesets, do: @available_rulesets
-  def unimplemented_rulesets, do: @unimplemented_rulesets
+  def unimplemented_rulesets, do: []
 
   @modpacks %{
     "riichi" => %{

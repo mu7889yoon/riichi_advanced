@@ -45,11 +45,13 @@ defmodule RiichiAdvancedWeb.IndexLive do
             <input type="radio" id={ruleset} name="ruleset" value={ruleset} checked={i==0} phx-update="ignore">
             <label for={ruleset} title={dt(@lang, desc)} data-name={dt(@lang, name)} tabindex={i}><%= dt(@lang, name) %></label>
           <% end %>
-          <br/>
-          <%= t(@lang, "To be implemented:") %>
-          <%= for {{ruleset, name, desc, link}, i} <- Enum.with_index(@unimplemented_rulesets) do %>
-            <input type="radio" id={ruleset} name="ruleset" value={ruleset} disabled>
-            <label for={ruleset} title={dt(@lang, desc)} data-name={dt(@lang, name)} tabindex={i}><a href={link} target="_blank"><%= dt(@lang, name) %></a></label>
+          <%= if @unimplemented_rulesets != [] do %>
+            <br/>
+            <%= t(@lang, "To be implemented:") %>
+            <%= for {{ruleset, name, desc, link}, i} <- Enum.with_index(@unimplemented_rulesets) do %>
+              <input type="radio" id={ruleset} name="ruleset" value={ruleset} disabled>
+              <label for={ruleset} title={dt(@lang, desc)} data-name={dt(@lang, name)} tabindex={i}><a href={link} target="_blank"><%= dt(@lang, name) %></a></label>
+            <% end %>
           <% end %>
         </div>
         <input class="nickname-input" type="text" name="nickname" placeholder={t(@lang, "Nickname (optional)")} value={@nickname || ""} />

@@ -233,12 +233,7 @@ defmodule RiichiAdvancedWeb.GameLive do
             <% end %>
           <% end %>
         </div>
-        <div class="auto-buttons">
-          <%= for {{name, desc, checked}, i} <- Enum.with_index(@state.players[@seat].auto_buttons) do %>
-            <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
-            <label for={"auto-button-" <> name} title={desc} data-name={t(@lang, Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"])} tabindex={i}><%= Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"] %></label>
-          <% end %>
-        </div>
+
         <div class="call-buttons-container">
           <%= for {called_tile, choices} <- @state.players[@seat].call_buttons do %>
             <%= if not Enum.empty?(choices) do %>
@@ -291,26 +286,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         viewer={@viewer}
         yakus={Rules.get(@state.rules_ref, "declarable_yaku", [])}
         :if={@state.players[@seat].declared_yaku == []} />
-      <div class="display-wall-hover" :if={Rules.get(@state.rules_ref, "display_wall", false)} phx-click="noop"><%= t(@lang, "Show wall") %></div>
-      <.live_component module={RiichiAdvancedWeb.DisplayWallComponent}
-        id="display-wall"
-        game_state={@game_state}
-        viewer={@viewer}
-        seat={@seat}
-        kyoku={@state.kyoku}
-        wall={@state.wall}
-        dead_wall={@state.dead_wall}
-        atop_wall={@state.atop_wall}
-        wall_length={length(Rules.get(@state.rules_ref, "wall", []))}
-        dice={@state.dice}
-        dice_roll={Enum.sum(@state.dice)}
-        wall_index={@state.wall_index}
-        dead_wall_index={@state.dead_wall_index}
-        revealed_tiles={@state.revealed_tiles}
-        reserved_tiles={@state.reserved_tiles}
-        drawn_reserved_tiles={@state.drawn_reserved_tiles}
-        available_seats={@state.available_seats}
-        :if={Rules.get(@state.rules_ref, "display_wall", false)} />
+
       <div class={["big-text"]} :if={@loading}><%= t(@lang, "Loading...") %></div>
       <div class="display-am-hand-hover" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}></div>
       <div class="display-am-hand-container" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}>
@@ -377,7 +353,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           riichi_sticks={Utils.try_integer(@state.pot / max(1, Rules.get(@state.rules_ref, "score_calculation", %{}) |> Map.get("riichi_value", 1)))}
           display_riichi_sticks={@display_riichi_sticks}
           display_honba={@display_honba} />
-        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" log_button={true} lang={@lang} />
+        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" log_button={false} lang={@lang} />
       </div>
 
       <div class="rules-wrapper">
@@ -405,7 +381,6 @@ defmodule RiichiAdvancedWeb.GameLive do
         <input type="radio" id={"rules-popover-unselect"} name="rules-popover-tab" class="rules-popover-unselect" phx-update="ignore">
         <label for={"rules-popover-unselect"}></label>
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
       <div class="ruleset">
         <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
         <textarea readonly><%= Rules.get(@state.rules_ref, :ruleset_json) %></textarea>

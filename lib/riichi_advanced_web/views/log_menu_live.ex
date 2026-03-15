@@ -8,7 +8,7 @@ defmodule RiichiAdvancedWeb.LogMenuLive do
     |> assign(:session_id, session["session_id"])
     |> assign(:messages, [])
     |> assign(:nickname, Map.get(params, "nickname", ""))
-    |> assign(:lang, Map.get(params, "lang", "en"))
+    |> assign(:lang, Map.get(params, "lang", "ja"))
     |> assign(:log_id, "")
     |> assign(:error_message, nil)
     |> assign(:version, Constants.version())

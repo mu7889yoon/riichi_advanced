@@ -3526,6 +3526,12 @@ msgstr "持ち点"
 msgid "Starting game..."
 msgstr "試合開始...。"
 
+msgid "Static Site Hosting"
+msgstr "静的サイトホスティング"
+
+msgid "1 han if your winning hand (four sets and a pair) uses 4p, 5p, and 3s as one of its sets."
+msgstr "和了形（４面子１雀頭）の面子の一つが4p・5p・3sで構成されている場合、１翻。"
+
 msgid "Steal tile and declare riichi"
 msgstr "牌を奪って立直宣言"
 

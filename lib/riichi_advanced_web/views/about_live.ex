@@ -36,7 +36,7 @@ defmodule RiichiAdvancedWeb.AboutLive do
     |> assign(:session_id, session["session_id"])
     |> assign(:messages, [])
     |> assign(:nickname, Map.get(params, "nickname", ""))
-    |> assign(:lang, Map.get(params, "lang", "en"))
+    |> assign(:lang, Map.get(params, "lang", "ja"))
     |> assign(:beta_testers, @beta_testers)
     |> assign(:version, Constants.version())
     messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)

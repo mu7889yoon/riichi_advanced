@@ -13,7 +13,7 @@ defmodule RiichiAdvancedWeb.LogLive do
     |> assign(:session_id, session["session_id"])
     |> assign(:log_id, params["log_id"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
-    |> assign(:lang, Map.get(params, "lang", "en"))
+    |> assign(:lang, Map.get(params, "lang", "ja"))
     |> assign(:game_state, nil)
     |> assign(:log_control_state, nil)
     |> assign(:messages, [])

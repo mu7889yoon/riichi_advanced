@@ -15,7 +15,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     |> assign(:ruleset, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:display_name, params["ruleset"])
-    |> assign(:lang, Map.get(params, "lang", "en"))
+    |> assign(:lang, Map.get(params, "lang", "ja"))
     |> assign(:available_tutorials, Map.get(Constants.tutorials(), params["ruleset"], []))
     |> assign(:clicked_index, nil)
 

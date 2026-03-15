@@ -10,7 +10,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
     socket = socket
     |> assign(:session_id, session["session_id"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
-    |> assign(:lang, Map.get(params, "lang", "en"))
+    |> assign(:lang, Map.get(params, "lang", "ja"))
     |> assign(:messages, [])
     |> assign(:show_room_code_buttons, false)
     |> assign(:room_code, [])

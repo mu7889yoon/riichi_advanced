@@ -12,7 +12,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
     |> assign(:display_name, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:from, Map.get(params, "from", nil))
-    |> assign(:lang, Map.get(params, "lang", "en"))
+    |> assign(:lang, Map.get(params, "lang", "ja"))
     |> assign(:players, %{east: nil, south: nil, west: nil, north: nil})
     |> assign(:room_state, nil)
     |> assign(:messages, [])

@@ -36,7 +36,7 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
     |> assign(:seat, Map.get(params, "seat", "east"))
     |> assign(:tutorial_id, Map.get(params, "tutorial_id", nil))
     |> assign(:from, Map.get(params, "from", nil))
-    |> assign(:lang, Map.get(params, "lang", "en"))
+    |> assign(:lang, Map.get(params, "lang", "ja"))
     |> assign(:loading, false)
 
     sequence_json = if socket.assigns.tutorial_id != nil do

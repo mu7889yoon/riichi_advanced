@@ -10,7 +10,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     |> assign(:ruleset, params["ruleset"])
     |> assign(:display_name, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
-    |> assign(:lang, Map.get(params, "lang", "en"))
+    |> assign(:lang, Map.get(params, "lang", "ja"))
     |> assign(:lobby_state, nil)
     |> assign(:messages, [])
     |> assign(:state, %Lobby{})

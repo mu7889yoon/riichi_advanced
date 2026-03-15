@@ -18,7 +18,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:seat_param, params["seat"])
     |> assign(:tutorial_sequence_name, params["sequence"])
-    |> assign(:lang, Map.get(params, "lang", "en"))
+    |> assign(:lang, Map.get(params, "lang", "ja"))
     |> assign(:game_state, nil)
     |> assign(:messages, [])
     |> assign(:state, %Game{})

@@ -36,3 +36,6 @@ config :phoenix, :plug_init_mode, :runtime
 # Enable helpful, but potentially expensive runtime checks
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true
+
+# Valkey connection pool size for tests
+config :riichi_advanced, :valkey_pool_size, 3

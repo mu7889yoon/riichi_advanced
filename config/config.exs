@@ -67,7 +67,6 @@ config :logger, LoggerFileBackend,
   level: :error,
   truncate: :infinity # don't set this in prod
 
-# cache
+# cache - NebulexRedisAdapter config (connection opts set in runtime.exs)
 config :riichi_advanced, RiichiAdvanced.Cache,
-  limit: 1_000_000,
   stats: true

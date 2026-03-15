@@ -7,6 +7,14 @@ import Config
 # any compile-time configuration in here, as it won't be applied.
 # The block below contains prod specific runtime configuration.
 
+# Nebulex Redis adapter config (all environments)
+valkey_url = System.get_env("VALKEY_URL", "redis://localhost:6379")
+
+config :riichi_advanced, RiichiAdvanced.Cache,
+  conn_opts: [
+    url: valkey_url
+  ]
+
 if config_env() == :prod do
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||

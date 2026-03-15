@@ -2,6 +2,7 @@ _build/
 deps/
 .git/
 .github/
+.kiro/
 iac/
 docker/local/
 documentation/

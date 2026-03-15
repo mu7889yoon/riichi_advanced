@@ -9,7 +9,13 @@ defmodule RiichiAdvanced.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      releases: [
+        riichi_advanced: [
+          include_executables_for: [:unix],
+          applications: [runtime_tools: :permanent]
+        ]
+      ]
     ]
   end
 
@@ -81,17 +87,13 @@ defmodule RiichiAdvanced.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      # setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
-      # "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      # "ecto.reset": ["ecto.drop", "ecto.setup"],
-      # setup: ["deps.get", "assets.setup", "assets.build"],
-      # test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      # "assets.setup": ["esbuild.install --if-missing"],
-      # "assets.build": ["esbuild riichi_advanced"],
-      # "assets.deploy": [
-      #   "esbuild riichi_advanced --minify",
-      #   "phx.digest"
-      # ]
+      setup: ["deps.get", "assets.setup", "assets.build"],
+      "assets.setup": ["esbuild.install --if-missing"],
+      "assets.build": ["esbuild riichi_advanced"],
+      "assets.deploy": [
+        "esbuild riichi_advanced --minify",
+        "phx.digest"
+      ]
     ]
   end
 end

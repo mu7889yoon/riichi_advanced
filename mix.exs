@@ -76,6 +76,10 @@ defmodule RiichiAdvanced.MixProject do
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
       {:ex_cmd, "~> 0.18.0"},
+      {:redix, "~> 1.5"},
+      {:phoenix_pubsub_redis, "~> 3.0"},
+      {:nebulex_redis_adapter, "~> 2.4"},
+      {:stream_data, "~> 1.0", only: :test},
     ]
   end
 

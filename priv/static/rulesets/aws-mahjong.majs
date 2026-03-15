@@ -3,9 +3,29 @@
 define_set pair, ~s"0 0"
 define_set shuntsu, ~s"0 1 2"
 define_set koutsu, ~s"0 0 0"
-define_set mentsu, ~s"0 0 0 | 0 1 2 | 4p 5p 3s"
+define_set mentsu, ~s"""
+  0 0 0 | 0 1 2
+  | 4p 5p 3s
+  | 2p 1m 8s
+  | 8s 1m 8m
+  | 3p 2m 7s | 3p 3m 7s
+  | 2m 7s 9s | 3m 7s 9s
+  | 8m 6m 5m
+  | 1p 7s 2m
+  | 9m 4m 2m
+  """
 define_set quad, ~s"0 0 0 0"
-define_set taatsu, ~s"0 0 | 0 1 | 0 2 | 4p 5p | 4p 3s | 5p 3s"
+define_set taatsu, ~s"""
+  0 0 | 0 1 | 0 2
+  | 4p 5p | 4p 3s | 5p 3s
+  | 2p 1m | 2p 8s | 1m 8s
+  | 8s 8m | 1m 8m
+  | 3p 2m | 3p 7s | 2m 7s | 3p 3m | 3m 7s
+  | 2m 9s | 7s 9s | 3m 9s
+  | 8m 6m | 8m 5m | 6m 5m
+  | 1p 7s | 1p 2m
+  | 9m 4m | 9m 2m | 4m 2m
+  """
 define_set iipeikou, ~s"0 1 2, 0 1 2"
 define_set ittsuu, ~s"0 1 2, 3 4 5, 6 7 8"
 define_set sanshoku_doujun, ~s"0 1 2, 10 11 12, 20 21 22"
@@ -73,9 +93,99 @@ define_yaku yaku, "Pinfu", 1, @closed_hand
   and match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:3, ryanmen_shuntsu:1, not_yakuhai_pair:1")
 define_yaku yaku, "Tanyao", 1, winning_hand_consists_of("2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s")
 define_yaku yaku, "Iipeikou", 1, @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
+# AWS yaku - 1 han special mentsu (closed only)
 define_set static_site_hosting, ~s"4p 5p 3s"
+define_set serverless_api, ~s"2p 1m 8s"
+define_set event_driven, ~s"8s 1m 8m"
+define_set web_application, ~s"3p 2m 7s | 3p 3m 7s"
+define_set in_memory_cache, ~s"2m 7s 9s | 3m 7s 9s"
+define_set batch, ~s"8m 6m 5m"
+define_set migration, ~s"1p 7s 2m"
+define_set job_observer, ~s"9m 4m 2m"
+
 define_yaku yaku, "Static Site Hosting", 1,
   match(["hand", "calls", "winning_tile"], ~m"exhaustive, static_site_hosting:1, mentsu:3, pair:1")
+define_yaku yaku, "Serverless API", 1,
+  match(["hand", "calls", "winning_tile"], ~m"exhaustive, serverless_api:1, mentsu:3, pair:1")
+define_yaku yaku, "Event Driven", 1,
+  match(["hand", "calls", "winning_tile"], ~m"exhaustive, event_driven:1, mentsu:3, pair:1")
+define_yaku yaku, "Web Application", 1,
+  match(["hand", "calls", "winning_tile"], ~m"exhaustive, web_application:1, mentsu:3, pair:1")
+define_yaku yaku, "In-Memory Cache", 1,
+  match(["hand", "calls", "winning_tile"], ~m"exhaustive, in_memory_cache:1, mentsu:3, pair:1")
+define_yaku yaku, "Batch", 1,
+  match(["hand", "calls", "winning_tile"], ~m"exhaustive, batch:1, mentsu:3, pair:1")
+define_yaku yaku, "Migration", 1,
+  match(["hand", "calls", "winning_tile"], ~m"exhaustive, migration:1, mentsu:3, pair:1")
+define_yaku yaku, "Job Observer", 1,
+  match(["hand", "calls", "winning_tile"], ~m"exhaustive, job_observer:1, mentsu:3, pair:1")
+
+# AWS yaku - 2 han (chi/pon allowed, 1 han open)
+define_set cicd_pipeline, ~s"7p 8p 9p"
+define_set rag_agent, ~s"3s 4s 5s"
+define_set master_replica, ~s"7s 7s 7s"
+
+define_yaku yaku, "CI/CD Pipeline", 2, @closed_hand
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, cicd_pipeline:1, mentsu:3, pair:1")
+define_yaku yaku, "RAG Agent", 2, @closed_hand
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, rag_agent:1, mentsu:3, pair:1")
+define_yaku yaku, "Master Replica", 2, @closed_hand
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, master_replica:1, mentsu:3, pair:1")
+define_yaku yaku, "CI/CD Pipeline Open", 1, not(@closed_hand)
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, cicd_pipeline:1, mentsu:3, pair:1")
+define_yaku yaku, "RAG Agent Open", 1, not(@closed_hand)
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, rag_agent:1, mentsu:3, pair:1")
+define_yaku yaku, "Master Replica Open", 1, not(@closed_hand)
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, master_replica:1, mentsu:3, pair:1")
+
+# AWS yaku - 3 han special
+define_set cicd_kan, ~s"6p 7p 8p 9p"
+define_set web_application_kan, ~s"3p 2m 7s 9s | 3p 3m 7s 9s"
+define_set blue_green_deploy_kan, ~s"3p 3m 6m 7s"
+define_set serverlesspresso, ~s"2p 1m 8s 8m 7m 1m"
+
+define_yaku yaku, "CI/CD Kan", 3, @closed_hand
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, cicd_kan:1, mentsu:2, pair:1")
+define_yaku yaku, "CI/CD Kan Open", 2, not(@closed_hand)
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, cicd_kan:1, mentsu:2, pair:1")
+define_yaku yaku, "Web Application Kan", 3, @closed_hand
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, web_application_kan:1, mentsu:2, pair:1")
+define_yaku yaku, "Web Application Kan Open", 2, not(@closed_hand)
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, web_application_kan:1, mentsu:2, pair:1")
+define_yaku yaku, "Blue/Green Deploy Kan", 3,
+  match(["hand", "calls", "winning_tile"], ~m"exhaustive, blue_green_deploy_kan:1, mentsu:2, pair:1")
+
+define_yaku yaku, "Serverlesspresso", 3,
+  match(["hand", "calls", "winning_tile"], ~m"exhaustive, serverlesspresso:1, mentsu:1, pair:1")
+
+# AWS Redundancy (AWS Iipeikou) - same AWS yaku x2, closed only, 3 han
+define_yaku yaku, "AWS Redundancy", 3, @closed_hand
+  and (match(["hand", "calls", "winning_tile"], ~m"exhaustive, static_site_hosting:2, mentsu:2, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, serverless_api:2, mentsu:2, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, event_driven:2, mentsu:2, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, web_application:2, mentsu:2, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, in_memory_cache:2, mentsu:2, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, batch:2, mentsu:2, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, migration:2, mentsu:2, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, job_observer:2, mentsu:2, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, cicd_pipeline:2, mentsu:2, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, rag_agent:2, mentsu:2, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, master_replica:2, mentsu:2, pair:1"))
+
+# AWS 3AZ (AWS Sanankou) - same AWS yaku x3, closed only, 3 han
+define_yaku yaku, "AWS 3AZ", 3, @closed_hand
+  and (match(["hand", "calls", "winning_tile"], ~m"exhaustive, static_site_hosting:3, mentsu:1, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, serverless_api:3, mentsu:1, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, event_driven:3, mentsu:1, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, web_application:3, mentsu:1, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, in_memory_cache:3, mentsu:1, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, batch:3, mentsu:1, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, migration:3, mentsu:1, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, job_observer:3, mentsu:1, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, cicd_pipeline:3, mentsu:1, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, rag_agent:3, mentsu:1, pair:1")
+    or match(["hand", "calls", "winning_tile"], ~m"exhaustive, master_replica:3, mentsu:1, pair:1"))
+
 define_yaku yaku, "Haku", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
 define_yaku yaku, "Hatsu", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
 define_yaku yaku, "Chun", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
@@ -155,6 +265,22 @@ define_yaku yakuman, "Kokushi Musou", 1, match(["hand", "winning_tile"], ~m"orph
 define_yaku yakuman, "Kokushi Musou Juusan Menmachi", 2, match(["hand"], ~m"orphans_all:1")
 define_yaku yakuman, "Daisuushii", 2, match(["hand", "calls", "winning_tile"], ["daisuushii"])
 define_yaku yakuman, "Shousuushii", 1, match(["hand", "calls", "winning_tile"], ["shousuushii"])
+
+# AWS yakuman
+# DR Architecture - yakuman (chiitoitsu variant with specific pairs + 2 wind pairs)
+# Pattern 1: 55p + 33p + 22m + 77s + 33s + two wind pairs (any 2 of 1z-4z)
+# Pattern 2: 55p + 33p + 33m + 77s + 22s + two wind pairs (any 2 of 1z-4z)
+define_yaku yakuman, "DR Architecture", 1, @closed_hand
+  and match(["hand", "calls", "winning_tile"], ~m"(nojoker quad):-1, pair:7")
+  and (
+    winning_hand_consists_of("5p","3p","2m","7s","3s","1z","2z","3z","4z")
+    or
+    winning_hand_consists_of("5p","3p","3m","7s","2s","1z","2z","3z","4z")
+  )
+
+# AWS All Green - 13 han (open or closed)
+# Hand consists of only 1s,2s,3s,4s,5s,6s,6z
+define_yaku yakuman, "AWS All Green", 1, winning_hand_consists_of("1s","2s","3s","4s","5s","6s","6z")
 # tenhou upgrades certain yakuman to double yakuman
 define_yaku meta_yakuman, "Suuankou Tanki", 2, not_has_existing_yaku("Suuankou Tanki") and has_existing_yaku("Tenhou", "Suuankou")
 define_yaku meta_yakuman, "Junsei Chuurenpoutou", 2, not_has_existing_yaku("Junsei Chuurenpoutou") and has_existing_yaku("Tenhou", "Chuurenpoutou")
@@ -173,6 +299,18 @@ define_yaku_precedence "Chuurenpoutou", ["Chinitsu"]
 define_yaku_precedence "Junsei Chuurenpoutou", ["Chuurenpoutou"]
 define_yaku_precedence "Kokushi Musou Juusan Menmachi", ["Kokushi Musou"]
 define_yaku_precedence "Daisuushii", ["Shousuushii"]
+
+# AWS yaku precedences
+define_yaku_precedence "CI/CD Pipeline", ["CI/CD Pipeline Open"]
+define_yaku_precedence "RAG Agent", ["RAG Agent Open"]
+define_yaku_precedence "Master Replica", ["Master Replica Open"]
+define_yaku_precedence "CI/CD Kan", ["CI/CD Pipeline", "CI/CD Pipeline Open", "CI/CD Kan Open"]
+define_yaku_precedence "CI/CD Kan Open", ["CI/CD Pipeline", "CI/CD Pipeline Open"]
+define_yaku_precedence "Web Application Kan", ["Web Application", "Web Application Kan Open"]
+define_yaku_precedence "Web Application Kan Open", ["Web Application"]
+define_yaku_precedence "Serverlesspresso", ["Serverless API"]
+define_yaku_precedence "AWS Redundancy", ["Iipeikou"]
+define_yaku_precedence "AWS 3AZ", ["Sanankou", "AWS Redundancy"]
 
 set score_calculation, %{
     scoring_method: ["score_table", "multiplier"],
@@ -329,8 +467,24 @@ on after_initialization do
   update_rule("1 Han", "Tanyao", "%{example_hand}", %{example_hand: ~t"234m33777p45678s 6s"})
   add_rule("1 Han", "Iipeikou", "Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123.")
   update_rule("1 Han", "Iipeikou", "%{example_hand}", %{example_hand: ~t"33445m33777p678s 5m"})
-  add_rule("1 Han", "Static Site Hosting", "1 han if your winning hand (four sets and a pair) uses 4p, 5p, and 3s as one of its sets.")
+  add_rule("1 Han", "Static Site Hosting", "静的サイトホスティング(CDP). 1 han if your winning hand uses 4p, 5p, and 3s as one of its sets.")
   update_rule("1 Han", "Static Site Hosting", "%{example_hand}", %{example_hand: ~t"123m45p33s11z 3S33s 6p"})
+  add_rule("1 Han", "Serverless API", "サーバレスAPI. 1 han if your winning hand uses 2p, 1m, and 8s as one of its sets.")
+  add_rule("1 Han", "Event Driven", "イベントドリブンアーキテクチャ. 1 han if your winning hand uses 8s, 1m, and 8m as one of its sets.")
+  add_rule("1 Han", "Web Application", "Webアプリケーション(CDP). 1 han if your winning hand uses 3p, 2m/3m, and 7s as one of its sets.")
+  add_rule("1 Han", "In-Memory Cache", "インメモリーキャッシュ(CDP). 1 han if your winning hand uses 2m/3m, 7s, and 9s as one of its sets.")
+  add_rule("1 Han", "Batch", "バッチ. 1 han if your winning hand uses 8m, 6m, and 5m as one of its sets.")
+  add_rule("1 Han", "Migration", "マイグレーション(CDP). 1 han if your winning hand uses 1p, 7s, and 2m as one of its sets.")
+  add_rule("1 Han", "Job Observer", "ジョブオブザーバー(CDP). 1 han if your winning hand uses 9m, 4m, and 2m as one of its sets.")
+  add_rule("2 Han", "CI/CD Pipeline", "CI/CDパイプライン. 2 han (1 han open) if your winning hand uses 7p, 8p, 9p as one of its sets. Can be called with chii.")
+  add_rule("2 Han", "RAG Agent", "RAG エージェント. 2 han (1 han open) if your winning hand uses 3s, 4s, 5s as one of its sets. Can be called with chii.")
+  add_rule("2 Han", "Master Replica", "マスター・レプリカ構成. 2 han (1 han open) if your winning hand uses 7s, 7s, 7s as one of its sets. Can be called with pon.")
+  add_rule("3 Han", "CI/CD Kan", "CI/CDカン. 3 han (2 han open) if your winning hand uses 6p, 7p, 8p, 9p as one of its sets.")
+  add_rule("3 Han", "Web Application Kan", "Webアプリケーション カン. 3 han (2 han open) if your winning hand uses 3p, 2m/3m, 7s, 9s as one of its sets.")
+  add_rule("3 Han", "Blue/Green Deploy Kan", "Blue/Greenデプロイ カン. 3 han if your winning hand uses 3p, 3m, 6m, 7s as one of its sets. Closed only.")
+  add_rule("3 Han", "Serverlesspresso", "Serverlesspresso. 3 han if your winning hand uses 2p, 1m, 8s, 8m, 7m, 1m as two of its sets. Closed only. Does not combine with Serverless API.")
+  add_rule("3 Han", "AWS Redundancy", "冗長化 - AWS一盃口. 3 han if you have the same AWS yaku set twice. Closed only. Does not combine with Iipeikou.")
+  add_rule("3 Han", "AWS 3AZ", "3AZ構成 - AWS三暗刻. 3 han if you have the same AWS yaku set three times. Closed only. Does not combine with Sanankou or AWS Redundancy.")
   add_rule("1 Han", "Yakuhai", """
   1 %{han} for each of the following triplets in your hand:
   - A triplet of dragon tiles %{dragons}
@@ -389,6 +543,8 @@ on after_initialization do
   update_rule("Yakuman", "Shousuushii", "%{example_hand}", %{example_hand: ~t"23s22233444z 1z1Z1z 4s"})
   add_rule("Yakuman", "Daisuushii", "Double yakuman if your hand contains triplets or kans of all four winds.", 2)
   update_rule("Yakuman", "Daisuushii", "%{example_hand}", %{example_hand: ~t"22s22233444z 1z1Z1z 3z"})
+  add_rule("Yakuman", "DR Architecture", "DRアーキテクチャ. Yakuman if your hand is a chiitoitsu (seven pairs) variant with specific pairs: 55p, 33p, 22m, 77s, 33s (or 55p, 33p, 33m, 77s, 22s) plus two wind pairs. Closed only.")
+  add_rule("Yakuman", "AWS All Green", "AWS 緑一色. Yakuman if your hand consists of only 1s, 2s, 3s, 4s, 5s, 6s, and 6z (hatsu). Open or closed.")
 end
 
 on before_turn_change do

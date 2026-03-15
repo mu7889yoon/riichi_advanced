@@ -67,9 +67,10 @@ define_const closed_hand, has_no_call_named("chii", "pon", "daiminkan", "kakan")
 define_yaku yaku, "Tsumo", 1, won_by_draw and @closed_hand
 define_yaku yaku, "Haitei", 1, no_tiles_remaining and won_by_draw
 define_yaku yaku, "Houtei", 1, no_tiles_remaining and not_won_by_draw
+define_set ryanmen_shuntsu, ~s"0@winning_tile -1@tanyao -2@tanyao | 0@winning_tile 1@tanyao 2@tanyao"
+define_set not_yakuhai_pair, ~s"0@not_yakuhai 0@not_yakuhai"
 define_yaku yaku, "Pinfu", 1, @closed_hand
-  and match(["hand", "calls", "winning_tile"], ["standard_win"])
-  and ((won_by_draw and minipoints_equals(20)) or (not_won_by_draw and minipoints_equals(30)))
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:3, ryanmen_shuntsu:1, not_yakuhai_pair:1")
 define_yaku yaku, "Tanyao", 1, winning_hand_consists_of("2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s")
 define_yaku yaku, "Iipeikou", 1, @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
 define_set static_site_hosting, ~s"4p 5p 3s"
@@ -175,40 +176,18 @@ define_yaku_precedence "Kokushi Musou Juusan Menmachi", ["Kokushi Musou"]
 define_yaku_precedence "Daisuushii", ["Shousuushii"]
 
 set score_calculation, %{
-    scoring_method: ["han_fu_formula", "multiplier"],
-    score_multiplier: 32000, # this is for yakuman
+    scoring_method: ["score_table", "multiplier"],
+    score_table: %{max: 0},
+    score_multiplier: 32000,
     dealer_multiplier: 1.5,
-    score_name: "Yakuman",
-    limit_thresholds: [
-      [3, 70], [4, 40], [5, 0],
-      [6, 0],
-      [8, 0],
-      [11, 0],
-      [13, 0]
-    ],
-    limit_scores: [
-      8000, 8000, 8000,
-      12000,
-      16000,
-      24000,
-      32000
-    ],
-    limit_names: [
-      "Mangan", "Mangan", "Mangan",
-      "Haneman",
-      "Baiman",
-      "Sanbaiman",
-      "Kazoe Yakuman"
-    ],
+    score_name: "",
     yaku_lists: ["yaku", "meta_yaku", "extra_yaku"],
     yaku2_lists: ["yakuman", "meta_yakuman"],
     extra_yaku_lists: ["extra_yaku"],
     yaku2_overrides_yaku1: true,
     split_oya_ko_payment: true,
-    right_display: "minipoints",
     point_name: "Han",
     point2_name: "★",
-    minipoint_name: "Fu",
     win_by_discard_label: "Ron",
     win_by_draw_label: "Tsumo",
     win_by_discard_name: "Ron",
@@ -279,39 +258,33 @@ def noten_payments do
   end
 end
 on after_scoring do
+  if end_points2 == 0 do
+    if won_by_draw do
+      if seat_is("east") do
+        modify_payout("others", "payment", "subtract")
+        modify_payout("self", "payment", "add")
+        modify_payout("self", "payment", "add")
+      else
+        modify_payout("others", "payment", "subtract")
+        modify_payout("east", "payment", "add")
+        modify_payout("east", "dealer_payment", "subtract")
+        modify_payout("self", "payment", "add")
+        modify_payout("self", "dealer_payment", "add")
+      end
+    else
+      if won_by_call do
+        modify_payout("caller", "payment", "subtract")
+      else
+        modify_payout("last_discarder", "payment", "subtract")
+      end
+      modify_payout("self", "payment", "add")
+    end
+  end
   if ended_by_exhaustive_draw do
     noten_payments
   end
 end
 
-define_const calls_fu, %{pon: 2}
-define_const winning_groups_fu, [
-  # kanchan
-  %{groups: ~s"-1 0@winning_tile 1", value: 2},
-  # penchan
-  %{groups: ~s"0@winning_tile -1@tanyao -2@terminal", value: 2},
-  %{groups: ~s"0@winning_tile 1@tanyao 2@terminal", value: 2},
-  # ryanmen
-  %{groups: ~s"0@winning_tile -1@tanyao -2@tanyao"},
-  %{groups: ~s"0@winning_tile 1@tanyao 2@tanyao"},
-  # shanpon
-  %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&ron", value: 2},
-  %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&ron", value: 4},
-  %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&tsumo", value: 4},
-  %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&tsumo", value: 8},
-  # tanki
-  %{groups: ~s"0@not_yakuhai 0@winning_tile", value: 2},
-  %{groups: ~s"0@prevalent 0@winning_tile | 0@seat 0@winning_tile | 5z 5z@winning_tile | 6z 6z@winning_tile | 7z 7z@winning_tile", value: 4}
-]
-define_const groups_fu, [
-  %{groups: ~s"0 1 2"},
-  %{groups: ~s"0@tanyao 0@tanyao 0@tanyao", value: 4},
-  %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8},
-  # pair
-  # for pinfu reasons, only non-yakuhai can be removed for 0 value
-  %{groups: ~s"0@not_yakuhai 0@not_yakuhai"},
-  %{groups: ~s"0@prevalent 0@prevalent | 0@seat 0@seat | 5z 5z | 6z 6z | 7z 7z", value: 2}
-]
 define_const always_yakuhai, ["5z", "6z", "7z"]
 
 apply append, "functions.add_scoring_attrs" do
@@ -330,63 +303,6 @@ apply append, "functions.add_scoring_attrs" do
     add_attr(["winning_tile"], ["_ron"])
   end
 end
-def calculate_fu do
-  if fu == 0 do
-    set_counter("fu", "minipoints") do
-      # score calls
-      convert_calls(@calls_fu)
-      remove_calls(["tanyaohai"])
-      convert_calls(@calls_fu)
-      remove_calls
-
-      # now remove all closed groups
-      remove_groups(@winning_groups_fu)
-      remove_groups(@groups_fu)
-      prune(method: "tile_count", num_tiles: [1,4,7,10])
-      remove_groups(@groups_fu)
-      prune(method: "tile_count", num_tiles: [1,4,7,10])
-      remove_groups(@groups_fu)
-      prune(method: "tile_count", num_tiles: [1,4,7,10])
-      remove_groups(@groups_fu)
-      prune(method: "tile_count", num_tiles: [1,4,7,10])
-
-      # only retain configurations with 0 tiles remaining
-      retain_empty_hands
-
-      # add 1000 to pinfu hands so we prioritize pinfu later
-      add(1000, minipoints_equals(0))
-
-      # base 20
-      add(20)
-
-      # tsumo +2 (except closed pinfu tsumo)
-      add(2, won_by_draw and (minipoints_at_most(999) or not @closed_hand))
-
-      # closed ron +10 and open pinfu ron +10
-      add(10, not_won_by_draw and @closed_hand)
-      add(10, not_won_by_draw and not @closed_hand and minipoints_at_least(1000))
-
-      # take max, then subtract 1000 from pinfu hands
-      take_maximum
-      add(-1000, minipoints_at_least(1000))
-
-      # round up to nearest 10
-      round_up(10)
-      
-      # add original hand (for special hands like chiitoitsu and kokushi)
-      add_original_hand
-      
-      # chiitoitsu
-      add(25, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], [[ [["pair"], 7] ]]))
-
-      # kokushi
-      add(40, not_won_by_draw and @closed_hand and minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi_win"]))
-      add(30, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi_win"]))
-      take_maximum
-    end
-  end
-end
-
 on after_initialization do
   add_rule_tab("Rules")
   add_rule_tab("0.5 Han")
@@ -510,9 +426,65 @@ on before_win do
   noop
 end
 
+on after_win do
+  end_points = points
+  end_points2 = points2
+  if end_points2 == 0 do
+    if seat_is("east") do
+      if won_by_draw do
+        if end_points == 1 do payment = 1000 end
+        if end_points == 2 do payment = 1500 end
+        if end_points == 3 do payment = 2000 end
+        if end_points == 4 do payment = 3000 end
+        if end_points >= 5 do payment = 4000; modify_winner("score_name", "Mangan") end
+        if end_points >= 6 do payment = 6000; modify_winner("score_name", "Haneman") end
+        if end_points >= 8 do payment = 8000; modify_winner("score_name", "Baiman") end
+        if end_points >= 11 do payment = 12000; modify_winner("score_name", "Sanbaiman") end
+        if end_points >= 13 do payment = 18000; modify_winner("score_name", "Kazoe Yakuman") end
+        dealer_payment = payment
+      else
+        if end_points == 1 do payment = 1500 end
+        if end_points == 2 do payment = 3000 end
+        if end_points == 3 do payment = 5000 end
+        if end_points == 4 do payment = 8000 end
+        if end_points >= 5 do payment = 12000; modify_winner("score_name", "Mangan") end
+        if end_points >= 6 do payment = 18000; modify_winner("score_name", "Haneman") end
+        if end_points >= 8 do payment = 24000; modify_winner("score_name", "Baiman") end
+        if end_points >= 11 do payment = 36000; modify_winner("score_name", "Sanbaiman") end
+        if end_points >= 13 do payment = 48000; modify_winner("score_name", "Kazoe Yakuman") end
+        dealer_payment = 0
+      end
+    else
+      if won_by_draw do
+        if end_points == 1 do payment = 500; dealer_payment = 500 end
+        if end_points == 2 do payment = 1000; dealer_payment = 1000 end
+        if end_points == 3 do payment = 1000; dealer_payment = 2000 end
+        if end_points == 4 do payment = 1500; dealer_payment = 3000 end
+        if end_points >= 5 do payment = 2000; dealer_payment = 4000; modify_winner("score_name", "Mangan") end
+        if end_points >= 6 do payment = 3000; dealer_payment = 6000; modify_winner("score_name", "Haneman") end
+        if end_points >= 8 do payment = 4000; dealer_payment = 8000; modify_winner("score_name", "Baiman") end
+        if end_points >= 11 do payment = 6000; dealer_payment = 12000; modify_winner("score_name", "Sanbaiman") end
+        if end_points >= 13 do payment = 8000; dealer_payment = 16000; modify_winner("score_name", "Kazoe Yakuman") end
+      else
+        if end_points == 1 do payment = 1000 end
+        if end_points == 2 do payment = 2000 end
+        if end_points == 3 do payment = 3000 end
+        if end_points == 4 do payment = 5000 end
+        if end_points >= 5 do payment = 8000; modify_winner("score_name", "Mangan") end
+        if end_points >= 6 do payment = 12000; modify_winner("score_name", "Haneman") end
+        if end_points >= 8 do payment = 16000; modify_winner("score_name", "Baiman") end
+        if end_points >= 11 do payment = 24000; modify_winner("score_name", "Sanbaiman") end
+        if end_points >= 13 do payment = 32000; modify_winner("score_name", "Kazoe Yakuman") end
+        dealer_payment = 0
+      end
+    end
+    modify_winner("score", "payment", "add")
+    modify_winner("score", "dealer_payment", "add")
+  end
+end
+
 on before_scoring do
   add_scoring_attrs
-  calculate_fu
 end
 
 on after_start do

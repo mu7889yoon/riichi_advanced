@@ -51,11 +51,11 @@ defmodule RiichiAdvancedWeb.GameLive do
       assign(socket, :room_code, Ecto.UUID.generate())
     else socket end
 
-    last_mods = case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.room_code}, [], :cache_mods) do
+    last_mods = case RiichiAdvanced.ValkeyCache.get({socket.assigns.ruleset, socket.assigns.room_code}, [], :cache_mods) do
       [mods] -> mods
       []     -> []
     end
-    last_config = case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.room_code}, nil, :cache_configs) do
+    last_config = case RiichiAdvanced.ValkeyCache.get({socket.assigns.ruleset, socket.assigns.room_code}, nil, :cache_configs) do
       [config] -> config
       _        -> nil
     end
@@ -439,7 +439,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           {:ok, sequence_json} -> {sequence_json, false}
           {:error, _err}       ->
             # try loading custom ruleset from cache
-            case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.tutorial_sequence_name}, [], :cache_sequences) do
+            case RiichiAdvanced.ValkeyCache.get({socket.assigns.ruleset, socket.assigns.tutorial_sequence_name}, [], :cache_sequences) do
               [sequence_json] -> {sequence_json, true}
               _ -> {"{}", true}
             end

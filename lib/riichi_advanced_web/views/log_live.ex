@@ -66,8 +66,8 @@ defmodule RiichiAdvancedWeb.LogLive do
 
       if ruleset == "custom" and Map.has_key?(log["rules"], "ruleset_json") do
         # for custom logs, fetch the ruleset from the log and load it into ets before starting log supervisor
-        RiichiAdvanced.ETSCache.put(socket.assigns.room_code, log["rules"]["ruleset_json"], :cache_rulesets)
-        RiichiAdvanced.ETSCache.put(socket.assigns.room_code <> "_walker", log["rules"]["ruleset_json"], :cache_rulesets)
+        RiichiAdvanced.ValkeyCache.put(socket.assigns.room_code, log["rules"]["ruleset_json"], :cache_rulesets)
+        RiichiAdvanced.ValkeyCache.put(socket.assigns.room_code <> "_walker", log["rules"]["ruleset_json"], :cache_rulesets)
       end
 
       # subscribe to state updates

@@ -103,7 +103,7 @@ defmodule RiichiAdvanced.RoomState do
     [{exit_monitor, _}] = Utils.registry_lookup("exit_monitor_room", state.ruleset, state.room_code)
 
     # read in the last cached ruleset
-    ruleset_json = case RiichiAdvanced.ETSCache.get(state.room_code, nil, :cache_rulesets) do
+    ruleset_json = case RiichiAdvanced.ValkeyCache.get(state.room_code, nil, :cache_rulesets) do
       [ruleset_json_or_majs] -> ruleset_json_or_majs
       _ ->
         if state.ruleset == "config" do
@@ -123,7 +123,7 @@ defmodule RiichiAdvanced.RoomState do
     rules_ref = state.rules_ref
 
     # we start with default_mods, but if we're coming back to this screen, load the last mod setup instead
-    starting_mods = case RiichiAdvanced.ETSCache.get({state.ruleset, state.room_code}, [], :cache_mods) do
+    starting_mods = case RiichiAdvanced.ValkeyCache.get({state.ruleset, state.room_code}, [], :cache_mods) do
       [mods] -> mods
       []     -> Rules.get(rules_ref, "default_mods", [])
     end
@@ -524,9 +524,9 @@ defmodule RiichiAdvanced.RoomState do
     # check for 4MB limit, and save if within limit
     state = if byte_size(config) <= 4 * 1024 * 1024 do
       if state.ruleset == "custom" do
-        RiichiAdvanced.ETSCache.put(state.room_code, config, :cache_rulesets)
+        RiichiAdvanced.ValkeyCache.put(state.room_code, config, :cache_rulesets)
       else
-        RiichiAdvanced.ETSCache.put({state.ruleset, state.room_code}, config, :cache_configs)
+        RiichiAdvanced.ValkeyCache.put({state.ruleset, state.room_code}, config, :cache_configs)
       end
       state
     else

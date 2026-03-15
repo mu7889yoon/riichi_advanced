@@ -70,7 +70,7 @@ defmodule RiichiAdvancedWeb.Endpoint do
   # end
 
   def clear_mod_cache(conn, _opts) do
-    :ets.delete_all_objects(:cache_mods)
+    RiichiAdvanced.ValkeyCache.clear(:cache_mods)
     conn
   end
 end

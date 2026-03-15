@@ -49,7 +49,7 @@ defmodule RiichiAdvanced.ModLoader do
     if length(mods) < length(orig_mods) do
       IO.puts("Warning, the following mods were included twice: #{inspect(orig_mods -- mods)}")
     end
-    case RiichiAdvanced.ETSCache.get({ruleset, mods}, [], :cache_mods) do
+    case RiichiAdvanced.ValkeyCache.get({ruleset, mods}, [], :cache_mods) do
       [modded_json] ->
         # IO.puts("Using cached mods for ruleset #{ruleset}: #{inspect(mods)}")
         modded_json
@@ -68,7 +68,7 @@ defmodule RiichiAdvanced.ModLoader do
         end
         
         if not Debug.skip_ruleset_caching() do
-          RiichiAdvanced.ETSCache.put({ruleset, mods}, modded_json, :cache_mods)
+          RiichiAdvanced.ValkeyCache.put({ruleset, mods}, modded_json, :cache_mods)
         end
 
         modded_json
@@ -146,7 +146,7 @@ defmodule RiichiAdvanced.ModLoader do
     modpacks = Constants.modpacks()
     cond do
       ruleset == "custom" and Enum.empty?(visited) ->
-        case RiichiAdvanced.ETSCache.get(room_code, ["{}"], :cache_rulesets) do
+        case RiichiAdvanced.ValkeyCache.get(room_code, ["{}"], :cache_rulesets) do
           [ruleset_json_or_majs] ->
             case Jason.decode(ruleset_json_or_majs) do
               {:ok, _}    -> ruleset_json_or_majs
@@ -215,7 +215,7 @@ defmodule RiichiAdvanced.ModLoader do
   def default_config, do: @default_config
 
   def get_config_majs(ruleset, room_code) do
-    case RiichiAdvanced.ETSCache.get({ruleset, room_code}, nil, :cache_configs) do
+    case RiichiAdvanced.ValkeyCache.get({ruleset, room_code}, nil, :cache_configs) do
       [config_majs] -> config_majs
       _ -> @default_config
     end

@@ -7,7 +7,6 @@ defmodule RiichiAdvanced.ValkeyCache do
   alias RiichiAdvanced.ValkeyAdapter
   alias RiichiAdvanced.StateSerializer
 
-  @max_size 1000
   @default_ttl 3600  # 1時間（秒）
 
   @doc """
@@ -44,6 +43,31 @@ defmodule RiichiAdvanced.ValkeyCache do
     binary = StateSerializer.serialize(value)
     ValkeyAdapter.command(["SET", cache_key, binary, "EX", @default_ttl])
     :ok
+  end
+
+  @doc """
+  指定テーブルのすべてのキャッシュエントリを削除する。
+  Valkeyの SCAN + DEL を使用してプレフィックスに一致するキーを削除する。
+  """
+  @spec clear(atom()) :: :ok
+  def clear(table) do
+    prefix = "cache:#{table}:*"
+    do_clear(prefix, "0")
+    :ok
+  end
+
+  defp do_clear(prefix, cursor) do
+    case ValkeyAdapter.command(["SCAN", cursor, "MATCH", prefix, "COUNT", "100"]) do
+      {:ok, [next_cursor, keys]} ->
+        if keys != [] do
+          ValkeyAdapter.command(["DEL" | keys])
+        end
+        if next_cursor != "0" do
+          do_clear(prefix, next_cursor)
+        end
+      {:error, _} ->
+        :ok
+    end
   end
 
   defp make_key(table, key) do

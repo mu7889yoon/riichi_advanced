@@ -40,7 +40,7 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
     |> assign(:loading, false)
 
     sequence_json = if socket.assigns.tutorial_id != nil do
-      case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.tutorial_id}, [], :cache_sequences) do
+      case RiichiAdvanced.ValkeyCache.get({socket.assigns.ruleset, socket.assigns.tutorial_id}, [], :cache_sequences) do
         [sequence_json] -> sequence_json
         _ -> @initial_sequence_json
       end
@@ -126,7 +126,7 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
     # 2MB char limit on sequence_json
     if sequence_json != nil and byte_size(sequence_json) <= 2 * 1024 * 1024 do
       uuid = Ecto.UUID.generate()
-      RiichiAdvanced.ETSCache.put({ruleset, uuid}, sequence_json, :cache_sequences)
+      RiichiAdvanced.ValkeyCache.put({ruleset, uuid}, sequence_json, :cache_sequences)
       socket = push_navigate(socket, to: ~p"/tutorial/#{ruleset}/#{uuid}?seat=#{seat}&nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
       {:noreply, socket}
     else {:noreply, socket} end

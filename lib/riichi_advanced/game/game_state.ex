@@ -333,7 +333,7 @@ defmodule RiichiAdvanced.GameState do
     |> ModLoader.apply_post_mods(state.ruleset)
     if not Enum.empty?(mods) do
       # cache mods
-      RiichiAdvanced.ETSCache.put({state.ruleset, state.room_code}, mods, :cache_mods)
+      RiichiAdvanced.ValkeyCache.put({state.ruleset, state.room_code}, mods, :cache_mods)
     end
 
     # apply config

@@ -40,8 +40,8 @@ export class AwsMahjongCdkStack extends cdk.Stack {
 
     const service = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'Service', {
       cluster: cluster,
-      memoryLimitMiB: 512,
-      cpu: 512,
+      memoryLimitMiB: 2048,
+      cpu: 1024,
       desiredCount: 1,
       taskImageOptions: {
         image: image,

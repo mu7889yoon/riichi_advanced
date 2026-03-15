@@ -30,7 +30,7 @@ defmodule RiichiAdvanced.RoomState do
     define_auto_button auto_sort,
       display_name: "A",
       desc: "Automatically sort your hand.",
-      enabled_at_start: true
+      enabled_at_start: false
       do
         sort_hand
       end

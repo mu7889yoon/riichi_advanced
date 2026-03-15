@@ -198,22 +198,15 @@ set score_calculation, %{
   }
 
 def turn_cleanup do
-  # unset furiten
-  unset_status("furiten")
   check_tenpai
 end
 
 def discard_passed do
-  # furiten check
-  as everyone do
-    if match(["hand", "calls", "last_discard"], ["win"]) do
-      set_status("furiten")
-    end
-  end
+  noop
 end
 
 # tenpai check
-# this is used to determine furiten and noten payments
+# this is used to determine noten payments
 def check_tenpai do
   if match(["hand", "calls", "draw"], ["tenpai"]) do
     set_status("tenpai")
@@ -400,10 +393,6 @@ end
 
 on before_turn_change do
   turn_cleanup
-  # add furiten due to discards
-  if status("tenpai") and match(["hand", "calls", "any_discard"], ["win"]) do
-    set_status("furiten")
-  end
 end
 
 on after_turn_change do
@@ -536,7 +525,6 @@ define_button ron,
   show_when: not_our_turn
     and someone_else_just_discarded
     and match(["hand", "calls"], ["tenpai"])
-    and status_missing("furiten")
     and match(["hand", "calls", "last_discard"], ["win"]),
   precedence_over: ["chii", "pon"]
   do
@@ -560,7 +548,7 @@ define_button tsumo,
   end
 
 set interruptible_actions, ["play_tile", "draw", "advance_turn", "self_call", "upgrade_call", "recalculate_buttons"]
-set shown_statuses, ["furiten"]
+set shown_statuses, []
 set display_wall, true
 set initial_score, 25000
 set initial_dead_wall_length, 14

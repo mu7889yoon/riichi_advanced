@@ -1,0 +1,12 @@
+services:
+  riichi-advanced:
+    build:
+      context: .
+      dockerfile: docker/deployment/Dockerfile
+    environment:
+      MIX_ENV: prod
+      HTTP_PORT: "4000"
+      DISABLE_HTTPS: "true"
+      SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
+    ports:
+      - "4000:4000"

@@ -12,7 +12,7 @@ WORKDIR /app
 
 RUN mix local.hex --force && mix local.rebar --force
 
-COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY docker/local/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]

@@ -1,6 +1,8 @@
 services:
   riichi-advanced:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/local/Dockerfile
     environment:
       MIX_ENV: dev
       HTTP_PORT: "4000"

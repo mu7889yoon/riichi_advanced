@@ -11,6 +11,7 @@ defmodule RiichiAdvanced.Application do
     children = [
       RiichiAdvancedWeb.Telemetry,
       # RiichiAdvanced.Repo,
+      RiichiAdvanced.ValkeyAdapter,
       {Registry, keys: :unique, name: :game_registry},
       RiichiAdvanced.ETSCache,
       {RiichiAdvanced.Cache, []},

@@ -5,6 +5,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as path from 'node:path';
 
 interface AwsMahjongCdkStackProps extends cdk.StackProps {
@@ -36,17 +37,30 @@ export class AwsMahjongCdkStack extends cdk.Stack {
       file: 'docker/deployment/Dockerfile',
     })
 
+    const secretKeyBase = new secretsmanager.Secret(this, 'SecretKeyBase', {
+      description: 'Phoenix SECRET_KEY_BASE for riichi-advanced',
+      generateSecretString: {
+        excludePunctuation: true,
+        passwordLength: 64,
+      },
+    })
+
     const certificate = acm.Certificate.fromCertificateArn(this, 'Certificate', props.certificateArn);
 
     const service = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'Service', {
       cluster: cluster,
-      memoryLimitMiB: 2048,
-      cpu: 1024,
+      memoryLimitMiB: 512,
+      cpu: 256,
       desiredCount: 1,
       taskImageOptions: {
         image: image,
-        containerPort: 80,
-        command: ['mix', 'phx.server'],
+        containerPort: 8080,
+        environment: {
+          PHX_HOST: 'aws-mahjong.mu7889yoon-dev.click',
+        },
+        secrets: {
+          SECRET_KEY_BASE: ecs.Secret.fromSecretsManager(secretKeyBase),
+        },
       },
       runtimePlatform: {
         cpuArchitecture: ecs.CpuArchitecture.ARM64,

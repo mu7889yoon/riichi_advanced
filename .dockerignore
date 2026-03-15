@@ -1,0 +1,14 @@
+_build/
+deps/
+.git/
+.github/
+iac/
+docker/local/
+documentation/
+assets/node_modules/
+*.md
+.dockerignore
+.gitignore
+.formatter.exs
+compose.yml
+compose.production.yml

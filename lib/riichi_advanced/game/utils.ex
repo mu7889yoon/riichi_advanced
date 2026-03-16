@@ -294,7 +294,16 @@ defmodule RiichiAdvanced.Utils do
     Registry.lookup(:game_registry, to_registry_name(name, ruleset))
   end
   def registry_lookup(name, ruleset, room_code) do
-    Registry.lookup(:game_registry, to_registry_name(name, ruleset, room_code))
+    # First check local Registry, then fall back to SessionRegistry (Valkey)
+    case Registry.lookup(:game_registry, to_registry_name(name, ruleset, room_code)) do
+      [{_pid, _}] = result -> result
+      [] ->
+        case RiichiAdvanced.SessionRegistry.lookup(name, ruleset, room_code) do
+          {:local, pid} -> [{pid, nil}]
+          {:remote, _node_id} -> []  # Remote session exists but not locally accessible
+          :not_found -> []
+        end
+    end
   end
 
   def try_integer(value) do

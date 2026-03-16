@@ -19,7 +19,7 @@ defmodule RiichiAdvanced.Application do
       Supervisor.child_spec({RiichiAdvanced.SessionSupervisor, name: RiichiAdvanced.RoomSessionSupervisor}, id: :room_session_supervisor),
       Supervisor.child_spec({RiichiAdvanced.SessionSupervisor, name: RiichiAdvanced.MessagesSessionSupervisor}, id: :messages_session_supervisor),
       {DNSCluster, query: Application.get_env(:riichi_advanced, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: RiichiAdvanced.PubSub},
+      {Phoenix.PubSub, pubsub_config()},
       # Start the Finch HTTP client for sending emails
       # {Finch, name: RiichiAdvanced.Finch},
       # Start a worker by calling: RiichiAdvanced.Worker.start_link(arg)
@@ -43,5 +43,17 @@ defmodule RiichiAdvanced.Application do
   def config_change(changed, _new, removed) do
     RiichiAdvancedWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp pubsub_config do
+    base = [name: RiichiAdvanced.PubSub]
+
+    case Application.get_env(:riichi_advanced, RiichiAdvanced.PubSub) do
+      nil ->
+        base
+
+      config when is_list(config) ->
+        Keyword.merge(base, config)
+    end
   end
 end

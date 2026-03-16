@@ -74,6 +74,14 @@ defmodule RiichiAdvancedWeb.GameLive do
       config = if Map.has_key?(socket.assigns, :tutorial_sequence) do Map.get(socket.assigns.tutorial_sequence, "config", nil) else last_config end
       config = if is_map(config) do Jason.encode!(config) else config end
 
+      # check session location via SessionRegistry
+      session_location = RiichiAdvanced.SessionRegistry.lookup("game", socket.assigns.ruleset, socket.assigns.room_code)
+      case session_location do
+        {:remote, node_id} ->
+          IO.puts("Game session #{socket.assigns.ruleset}:#{socket.assigns.room_code} exists on remote node #{node_id}")
+        _ -> :ok
+      end
+
       # subscribe to state updates
       # make sure to do this before starting a game process!
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.room_code)

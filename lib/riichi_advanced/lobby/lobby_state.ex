@@ -52,6 +52,9 @@ defmodule RiichiAdvanced.LobbyState do
   def init(state) do
     IO.puts("Lobby state PID is #{inspect(self())}")
 
+    # register this lobby session with the distributed SessionRegistry
+    RiichiAdvanced.SessionRegistry.register("lobby_state", state.ruleset, "")
+
     # lookup pids of the other processes we'll be using
     [{supervisor, _}] = Utils.registry_lookup("lobby", state.ruleset, "")
     [{exit_monitor, _}] = Utils.registry_lookup("exit_monitor_lobby", state.ruleset, "")
@@ -180,6 +183,7 @@ defmodule RiichiAdvanced.LobbyState do
     state = if Enum.empty?(state.players) do
       # all players have left, shutdown
       IO.puts("Stopping lobby for ruleset #{state.ruleset}")
+      RiichiAdvanced.SessionRegistry.unregister("lobby_state", state.ruleset, "")
       DynamicSupervisor.terminate_child(RiichiAdvanced.LobbySessionSupervisor, state.supervisor)
       state
     else

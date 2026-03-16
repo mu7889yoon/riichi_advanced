@@ -5,11 +5,13 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import * as elasticache from 'aws-cdk-lib/aws-elasticache';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as path from 'node:path';
 
 interface AwsMahjongCdkStackProps extends cdk.StackProps {
   certificateArn: string;
+  desiredCount?: number;
 }
 
 export class AwsMahjongCdkStack extends cdk.Stack {
@@ -47,16 +49,47 @@ export class AwsMahjongCdkStack extends cdk.Stack {
 
     const certificate = acm.Certificate.fromCertificateArn(this, 'Certificate', props.certificateArn);
 
+    // ElastiCache Serverless for Valkey
+    const valkeySecurityGroup = new ec2.SecurityGroup(this, 'ValkeySecurityGroup', {
+      vpc,
+      description: 'Security group for Valkey cluster',
+    });
+
+    const publicSubnetIds = vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }).subnetIds;
+
+    const valkeySubnetGroup = new elasticache.CfnSubnetGroup(this, 'ValkeySubnetGroup', {
+      description: 'Subnet group for Valkey',
+      subnetIds: publicSubnetIds,
+      cacheSubnetGroupName: 'riichi-advanced-valkey-subnet-group',
+    });
+
+    const valkeyCluster = new elasticache.CfnServerlessCache(this, 'ValkeyCluster', {
+      engine: 'valkey',
+      serverlessCacheName: 'riichi-advanced-valkey',
+      securityGroupIds: [valkeySecurityGroup.securityGroupId],
+      subnetIds: publicSubnetIds,
+    });
+    valkeyCluster.addDependency(valkeySubnetGroup);
+
+    // Valkey endpoint for VALKEY_URL
+    const valkeyEndpoint = cdk.Fn.join('', [
+      'rediss://',
+      valkeyCluster.attrEndpointAddress,
+      ':',
+      valkeyCluster.attrEndpointPort,
+    ]);
+
     const service = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'Service', {
       cluster: cluster,
       memoryLimitMiB: 512,
       cpu: 256,
-      desiredCount: 1,
+      desiredCount: props.desiredCount ?? 1,
       taskImageOptions: {
         image: image,
         containerPort: 8080,
         environment: {
           PHX_HOST: 'aws-mahjong.mu7889yoon-dev.click',
+          VALKEY_URL: valkeyEndpoint,
         },
         secrets: {
           SECRET_KEY_BASE: ecs.Secret.fromSecretsManager(secretKeyBase),
@@ -78,13 +111,16 @@ export class AwsMahjongCdkStack extends cdk.Stack {
       ],
     })
 
-    service.targetGroup.configureHealthCheck({
-      path: '/',
-      healthyHttpCodes: '200-499',
-      interval: cdk.Duration.seconds(300),
-      timeout: cdk.Duration.seconds(120),
-      healthyThresholdCount: 2,
-      unhealthyThresholdCount: 10,
-    })
+    // Allow Fargate -> Valkey on port 6379
+    valkeySecurityGroup.addIngressRule(
+      service.service.connections.securityGroups[0],
+      ec2.Port.tcp(6379),
+      'Allow Fargate to Valkey',
+    );
+
+    service.targetGroup.setAttribute('stickiness.enabled', 'true');
+    service.targetGroup.setAttribute('stickiness.type', 'app_cookie');
+    service.targetGroup.setAttribute('stickiness.app_cookie.cookie_name', 'RIICHI_SESSION');
+    service.targetGroup.setAttribute('stickiness.app_cookie.duration_seconds', '86400');
   }
 }

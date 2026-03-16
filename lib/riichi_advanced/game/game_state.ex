@@ -16,6 +16,7 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.RoomState.RoomPlayer, as: RoomPlayer
+  alias RiichiAdvanced.GameStatePersistence, as: GameStatePersistence
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
   
@@ -289,8 +290,27 @@ defmodule RiichiAdvanced.GameState do
     })
   end
 
+  # Fire-and-forget async save to Valkey. Failures are logged but never crash the game.
+  defp async_save_state(state) do
+    ruleset = state.ruleset
+    room_code = state.room_code
+    # Capture the state for the async task
+    Task.start(fn ->
+      try do
+        GameStatePersistence.save(ruleset, room_code, state)
+      rescue
+        e -> IO.puts("Failed to persist game state for #{ruleset}:#{room_code}: #{inspect(e)}")
+      catch
+        kind, reason -> IO.puts("Failed to persist game state for #{ruleset}:#{room_code}: #{inspect({kind, reason})}")
+      end
+    end)
+  end
+
   def init(state) do
     # IO.puts("Game state PID is #{inspect(self())}")
+
+    # register this game session with the distributed SessionRegistry
+    RiichiAdvanced.SessionRegistry.register("game_state", state.ruleset, state.room_code)
 
     # lookup pids of the other processes we'll be using
     [{debouncers, _}] = Utils.registry_lookup("debouncers", state.ruleset, state.room_code)
@@ -374,34 +394,54 @@ defmodule RiichiAdvanced.GameState do
       {:error, msg}    -> show_error(state, msg)
     end
 
-    state = Map.put(state, :available_seats, case Rules.get(state.rules_ref, "num_players", 4) do
-      1 -> [:east]
-      2 -> [:east, :west]
-      3 -> [:east, :south, :west]
-      4 -> [:east, :south, :west, :north]
-    end)
-    state = Map.put(state, :players, Map.new(state.available_seats, fn seat -> {seat, %Player{}} end))
-    state = Log.init_log(state)
-
-    state = Map.put(state, :kyoku, Rules.get(state.rules_ref, "starting_round", 0))
-    state = Map.put(state, :honba, Rules.get(state.rules_ref, "starting_honba", 0))
-
-    # initialize player state
-    initial_score = Rules.get(state.rules_ref, "initial_score", 0)
-    state = update_players(state, &%Player{ &1 | score: initial_score, start_score: initial_score })
-
-    # generate a UUID
-    state = Map.put(state, :ref, Ecto.UUID.generate())
-
-    # run init actions
-    state = run_init_actions(state)
-
-    # run after_initialization actions
-    state = Actions.trigger_event(state, "after_initialization", %{seat: state.turn})
+    # Try to restore state from Valkey (for node failover recovery)
+    state = case GameStatePersistence.load(state.ruleset, state.room_code) do
+      {:ok, saved_state} ->
+        IO.puts("Restoring game state from Valkey for #{state.ruleset}:#{state.room_code}")
+        # Merge saved state, preserving current session's PIDs and rules_ref
+        saved_state
+        |> Map.put(:ruleset, state.ruleset)
+        |> Map.put(:room_code, state.room_code)
+        |> Map.put(:mods, state.mods)
+        |> Map.put(:config, state.config)
+        |> Map.put(:supervisor, state.supervisor)
+        |> Map.put(:mutex, state.mutex)
+        |> Map.put(:smt_solver, state.smt_solver)
+        |> Map.put(:ai_supervisor, state.ai_supervisor)
+        |> Map.put(:exit_monitor, state.exit_monitor)
+        |> Map.put(:play_tile_debounce, state.play_tile_debounce)
+        |> Map.put(:play_tile_debouncers, state.play_tile_debouncers)
+        |> Map.put(:big_text_debouncers, state.big_text_debouncers)
+        |> Map.put(:timer_debouncer, state.timer_debouncer)
+        |> Map.put(:rules_ref, state.rules_ref)
+      _ ->
+        # No saved state found, proceed with fresh initialization
+        state
+        |> Map.put(:available_seats, case Rules.get(state.rules_ref, "num_players", 4) do
+          1 -> [:east]
+          2 -> [:east, :west]
+          3 -> [:east, :south, :west]
+          4 -> [:east, :south, :west, :north]
+        end)
+        |> then(fn s -> Map.put(s, :players, Map.new(s.available_seats, fn seat -> {seat, %Player{}} end)) end)
+        |> Log.init_log()
+        |> then(fn s -> Map.put(s, :kyoku, Rules.get(s.rules_ref, "starting_round", 0)) end)
+        |> then(fn s -> Map.put(s, :honba, Rules.get(s.rules_ref, "starting_honba", 0)) end)
+        |> then(fn s ->
+          initial_score = Rules.get(s.rules_ref, "initial_score", 0)
+          update_players(s, &%Player{ &1 | score: initial_score, start_score: initial_score })
+        end)
+        |> then(fn s -> Map.put(s, :ref, Ecto.UUID.generate()) end)
+        |> run_init_actions()
+        |> then(fn s -> Actions.trigger_event(s, "after_initialization", %{seat: s.turn}) end)
+    end
 
     # terminate game if no one joins in 15 minutes
     # (also effectively serves as a 15 minute timeout for exunit tests)
     :timer.apply_after(900_000, GenServer, :cast, [self(), :terminate_game_if_empty])
+
+    # persist initial state to Valkey
+    async_save_state(state)
 
     {:ok, state}
   end
@@ -1493,6 +1533,7 @@ defmodule RiichiAdvanced.GameState do
   end
   def handle_call({:put_state, new_state}, _from, state) do
     state = broadcast_state_change(merge_state(state, new_state), true)
+    async_save_state(state)
     {:reply, state, state}
   end
 
@@ -1570,11 +1611,20 @@ defmodule RiichiAdvanced.GameState do
     state = Actions.trigger_event(state, "before_start", %{seat: state.turn})
 
     state = initialize_new_round(state, log)
+    async_save_state(state)
     {:noreply, state}
   end
 
   def handle_cast(:terminate_game, state) do
     kill_all_tasks(state)
+    # Clean up persisted state from Valkey
+    try do
+      GameStatePersistence.delete(state.ruleset, state.room_code)
+    rescue
+      _ -> :ok
+    catch
+      _, _ -> :ok
+    end
     GenServer.stop(state.supervisor, :normal)
     {:noreply, state}
   end
@@ -1583,6 +1633,15 @@ defmodule RiichiAdvanced.GameState do
     if Enum.all?(state.messages_states, fn {_seat, messages_state} -> messages_state == nil end) do
       # all players and spectators have left, shutdown
       IO.puts("Stopping game #{state.room_code} #{inspect(self())}")
+      RiichiAdvanced.SessionRegistry.unregister("game_state", state.ruleset, state.room_code)
+      # Clean up persisted state from Valkey
+      try do
+        GameStatePersistence.delete(state.ruleset, state.room_code)
+      rescue
+        _ -> :ok
+      catch
+        _, _ -> :ok
+      end
       # DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
       kill_all_tasks(state)
       GenServer.stop(state.supervisor, :normal)
@@ -1715,12 +1774,14 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast({:run_actions, actions, context}, state) do 
     state = Actions.run_actions(state, actions, context)
     state = broadcast_state_change(state)
+    async_save_state(state)
     {:noreply, state}
   end
 
   def handle_cast({:run_deferred_actions, context}, state) do 
     state = Actions.run_deferred_actions(state, context)
     state = broadcast_state_change(state)
+    async_save_state(state)
     {:noreply, state}
   end
 
@@ -2059,6 +2120,7 @@ defmodule RiichiAdvanced.GameState do
         state
     end
     state = broadcast_state_change(state)
+    async_save_state(state)
     {:noreply, state}
   end
 

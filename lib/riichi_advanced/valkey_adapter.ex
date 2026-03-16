@@ -5,10 +5,13 @@ defmodule RiichiAdvanced.ValkeyAdapter do
   """
 
   def child_spec(_opts) do
+    url = valkey_url()
+    opts = connection_opts(url)
+
     children =
       for i <- 0..(pool_size() - 1) do
         Supervisor.child_spec(
-          {Redix, {valkey_url(), [name: :"redix_#{i}"]}},
+          {Redix, {url, Keyword.put(opts, :name, :"redix_#{i}")}},
           id: {Redix, i}
         )
       end
@@ -31,4 +34,20 @@ defmodule RiichiAdvanced.ValkeyAdapter do
   defp pool_size, do: Application.get_env(:riichi_advanced, :valkey_pool_size, 5)
 
   defp valkey_url, do: System.get_env("VALKEY_URL", "redis://localhost:6379")
+
+  # ElastiCache Serverless uses wildcard TLS certs that need special hostname check
+  defp connection_opts(url) when is_binary(url) do
+    if String.starts_with?(url, "rediss://") do
+      [
+        ssl: true,
+        socket_opts: [
+          customize_hostname_check: [
+            match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+          ]
+        ]
+      ]
+    else
+      []
+    end
+  end
 end

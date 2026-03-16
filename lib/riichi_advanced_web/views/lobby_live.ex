@@ -17,6 +17,14 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     |> assign(:show_room_code_buttons, false)
     |> assign(:room_code, [])
     if socket.root_pid != nil do
+      # check session location via SessionRegistry
+      session_location = RiichiAdvanced.SessionRegistry.lookup("lobby", socket.assigns.ruleset, "")
+      case session_location do
+        {:remote, node_id} ->
+          IO.puts("Lobby session #{socket.assigns.ruleset} exists on remote node #{node_id}")
+        _ -> :ok
+      end
+
       # subscribe to state updates
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "lobby:" <> socket.assigns.ruleset)
 

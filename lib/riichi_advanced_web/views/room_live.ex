@@ -20,6 +20,14 @@ defmodule RiichiAdvancedWeb.RoomLive do
     |> assign(:state, %Room{})
     |> assign(:root_pid, socket.root_pid)
     if socket.root_pid != nil do
+      # check session location via SessionRegistry
+      session_location = RiichiAdvanced.SessionRegistry.lookup("room", socket.assigns.ruleset, socket.assigns.room_code)
+      case session_location do
+        {:remote, node_id} ->
+          IO.puts("Room session #{socket.assigns.ruleset}:#{socket.assigns.room_code} exists on remote node #{node_id}")
+        _ -> :ok
+      end
+
       # start a new room process, if it doesn't exist already
       room_spec = {RiichiAdvanced.RoomSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, name: Utils.via_registry("room", socket.assigns.ruleset, socket.assigns.room_code)}
       room_state = case DynamicSupervisor.start_child(RiichiAdvanced.RoomSessionSupervisor, room_spec) do

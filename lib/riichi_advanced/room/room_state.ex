@@ -98,6 +98,9 @@ defmodule RiichiAdvanced.RoomState do
   def init(state) do
     IO.puts("Room state PID is #{inspect(self())}")
 
+    # register this room session with the distributed SessionRegistry
+    RiichiAdvanced.SessionRegistry.register("room_state", state.ruleset, state.room_code)
+
     # lookup pids of the other processes we'll be using
     [{supervisor, _}] = Utils.registry_lookup("room", state.ruleset, state.room_code)
     [{exit_monitor, _}] = Utils.registry_lookup("exit_monitor_room", state.ruleset, state.room_code)
@@ -374,6 +377,7 @@ defmodule RiichiAdvanced.RoomState do
         _                  -> nil
       end
       IO.puts("Stopping room #{state.room_code} for ruleset #{state.ruleset}")
+      RiichiAdvanced.SessionRegistry.unregister("room_state", state.ruleset, state.room_code)
       DynamicSupervisor.terminate_child(RiichiAdvanced.RoomSessionSupervisor, state.supervisor)
       state
     else

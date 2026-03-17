@@ -82,7 +82,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
           </button>
           <div class="room-mods">
             <%= for mod <- room.mods do %>
-              <div class="room-mod"><%= dt(@lang, mod) %></div>
+              <div class="room-mod"><%= dt(@lang, if is_map(mod) do mod.name else mod end) %></div>
             <% end %>
           </div>
           <div class="room-players">

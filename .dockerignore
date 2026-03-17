@@ -4,7 +4,6 @@ deps/
 .github/
 .kiro/
 iac/
-docker/local/
 documentation/
 assets/node_modules/
 *.md

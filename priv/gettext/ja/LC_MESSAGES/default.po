@@ -4784,3 +4784,9 @@ msgstr "和了するには少なくとも%{score}ハン必要です。"
 
 msgid "Your hand must score at least mangan to win."
 msgstr "和了するには満貫以上必要です。"
+
+msgid "An unofficial game created as educational content by JAWS-UG (AWS User Group Japan)."
+msgstr "JAWS-UG発の学習用コンテンツとして作成された非公式ゲームです。"
+
+msgid "Based on"
+msgstr "ベース:"

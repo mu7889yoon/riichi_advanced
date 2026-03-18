@@ -1,7 +1,7 @@
 defmodule RiichiAdvanced.DisableFuritenTest do
   use ExUnit.Case, async: true
 
-  @ruleset_path "priv/static/rulesets/aws-mahjong.majs"
+  @ruleset_path "priv/static/rulesets/builder-mahjong.majs"
 
   setup_all do
     content = File.read!(@ruleset_path)
@@ -9,9 +9,9 @@ defmodule RiichiAdvanced.DisableFuritenTest do
   end
 
   describe "furiten removal" do
-    test "aws-mahjong.majs does not contain the string 'furiten'", %{content: content} do
+    test "builder-mahjong.majs does not contain the string 'furiten'", %{content: content} do
       refute content =~ "furiten",
-        "Expected aws-mahjong.majs to not contain 'furiten', but it was found"
+        "Expected builder-mahjong.majs to not contain 'furiten', but it was found"
     end
   end
 

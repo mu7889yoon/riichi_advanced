@@ -236,7 +236,7 @@ defmodule RiichiAdvanced.Constants do
   def ai_names, do: @ai_names
 
   @available_rulesets [
-    {"aws-mahjong",  "AWS Mahjong", "A custom AWS-themed mahjong ruleset."},
+    {"builder-mahjong",  "Builder Mahjong", "A custom AWS themed mahjong ruleset."},
   ]
   @unimplemented_rulesets [
     {"filipino",     "Filipino", "16-tile mahjong where all honor tiles are flower tiles.", "https://mahjongpros.com/blogs/mahjong-rules-and-scoring-tables/official-filipino-mahjong-rules"},
@@ -275,9 +275,9 @@ defmodule RiichiAdvanced.Constants do
       ],
       default_mods: []
     },
-    "aws-mahjong" => %{
-      display_name: "AWS Mahjong",
-      ruleset: "aws-mahjong",
+    "builder-mahjong" => %{
+      display_name: "Builder Mahjong",
+      ruleset: "builder-mahjong",
       globals: %{
         chii_name: "Chii",
         pon_name: "Pon",

@@ -20,7 +20,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
       socket = assign(socket, :messages_state, messages_init.messages_state)
       # subscribe to message updates
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
-      GenServer.cast(messages_init.messages_state, {:add_message, %{text: "Welcome to Riichi Advanced!"}})
+      GenServer.cast(messages_init.messages_state, {:add_message, %{text: "Welcome to Builder Mahjong!"}})
       socket
     else socket end
     socket = assign(socket, :rulesets, Constants.available_rulesets())
@@ -32,10 +32,8 @@ defmodule RiichiAdvancedWeb.IndexLive do
     ~H"""
     <div id="container" phx-hook="ClickListener">
       <div class="title">
-        <div class="title-riichi">Riichi</div>
-        <div class="title-advanced">Advanced</div>
-        <div class="tile 8m"></div>
-        <div class="tile 7z"></div>
+        <div class="title-riichi">Builder</div>
+        <div class="title-advanced">Mahjong</div>
       </div>
       <input type="checkbox" id="expand-checkbox" class="expand-checkbox for-rulesets" phx-update="ignore"/>
       <label for="expand-checkbox"/>
@@ -66,15 +64,19 @@ defmodule RiichiAdvancedWeb.IndexLive do
             <% end %>
           </button>
         </div>
+        <div class="index-disclaimer">
+          <%= t(@lang, "An unofficial game created as educational content by JAWS-UG (AWS User Group Japan).") %>
+        </div>
+        <div class="index-disclaimer">
+          <%= t(@lang, "Based on") %> <a href="https://github.com/EpicOrange/riichi_advanced" target="_blank">Riichi Advanced</a> by EpicOrange
+        </div>
       </form>
       <%= if @show_room_code_buttons do %>
         <.live_component module={RiichiAdvancedWeb.RoomCodeComponent} id="room-code" lang={@lang} set_room_code={&send(self(), {:set_room_code, &1})} />
       <% end %>
       <div class="index-version"><%= @version %></div>
       <div class="index-bottom-buttons">
-        <button phx-click="goto_about"><%= t(@lang, "About") %></button>
-        <button><a href="https://github.com/EpicOrange/riichi_advanced" target="_blank"><%= t(@lang, "Source") %></a></button>
-        <button><a href="https://discord.gg/5QQHmZQavP" target="_blank"><%= t(@lang, "Discord") %></a></button>
+        <button><a href="https://github.com/mu7889yoon/riichi_advanced" target="_blank"><%= t(@lang, "Source") %></a></button>
         <button phx-click="goto_logs"><%= t(@lang, "Logs") %></button>
       </div>
       <div class="top-right-container">

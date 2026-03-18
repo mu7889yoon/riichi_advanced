@@ -4790,3 +4790,6 @@ msgstr "JAWS-UG発の学習用コンテンツとして作成された非公式�
 
 msgid "Based on"
 msgstr "ベース:"
+
+msgid "Post with #builder_mahjong!"
+msgstr "#builder_mahjong でポストしよう！"

@@ -3024,6 +3024,13 @@ div.title > div.title-advanced::before {
   background-repeat: no-repeat;
   z-index: -1;
 }
+div#container > form > div.index-disclaimer {
+  font-size: calc(0.35 * var(--tile-size));
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  margin-top: calc(0.3 * var(--tile-size));
+  line-height: 1.4;
+}
 div#container > div.index-version {
   position: absolute;
   font-size: calc(0.5 * var(--tile-size));

@@ -145,15 +145,15 @@ define_set blue_green_deploy_kan, ~s"3p 3m 6m 7s"
 define_set serverlesspresso, ~s"2p 1m 8s 8m 7m 1m"
 
 define_yaku yaku, "CI/CD Kan", 3, @closed_hand
-  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, cicd_kan:1, mentsu:2, pair:1")
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, cicd_kan:1, mentsu:3, pair:1")
 define_yaku yaku, "CI/CD Kan Open", 2, not(@closed_hand)
-  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, cicd_kan:1, mentsu:2, pair:1")
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, cicd_kan:1, mentsu:3, pair:1")
 define_yaku yaku, "Web Application Kan", 3, @closed_hand
-  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, web_application_kan:1, mentsu:2, pair:1")
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, web_application_kan:1, mentsu:3, pair:1")
 define_yaku yaku, "Web Application Kan Open", 2, not(@closed_hand)
-  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, web_application_kan:1, mentsu:2, pair:1")
-define_yaku yaku, "Blue/Green Deploy Kan", 3,
-  match(["hand", "calls", "winning_tile"], ~m"exhaustive, blue_green_deploy_kan:1, mentsu:2, pair:1")
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, web_application_kan:1, mentsu:3, pair:1")
+define_yaku yaku, "Blue/Green Deploy Kan", 3, @closed_hand
+  and match(["hand", "calls", "winning_tile"], ~m"exhaustive, blue_green_deploy_kan:1, mentsu:3, pair:1")
 
 define_yaku yaku, "Serverlesspresso", 3,
   match(["hand", "calls", "winning_tile"], ~m"exhaustive, serverlesspresso:1, mentsu:1, pair:1")

@@ -12,7 +12,7 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
     |> assign(:messages, [])
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:lang, Map.get(params, "lang", "ja"))
-    |> assign(:config, ModLoader.default_config())
+    |> assign(:config, ModLoader.default_config("riichi"))
     |> assign(:result, "")
     |> assign(:loading, false)
 
@@ -74,7 +74,9 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
   end
   
   def switch_mods_to_ruleset(socket, ruleset) do
-    socket = assign(socket, :ruleset, ruleset)
+    socket = socket
+    |> assign(:ruleset, ruleset)
+    |> assign(:config, ModLoader.default_config(ruleset))
 
     ruleset_json = ModLoader.get_ruleset_json(socket.assigns.ruleset)
     rules_ref = case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do

@@ -13,7 +13,7 @@ defmodule RiichiAdvanced.ModLoader do
 
   defp is_jq_var?(key) when is_binary(key), do: Regex.match?(~r/^[a-zA-Z_][a-zA-Z0-9_]*$/, key)
   defp is_jq_var?(key) when is_atom(key), do: Regex.match?(~r/^[a-zA-Z_][a-zA-Z0-9_]*$/, Atom.to_string(key))
-  defp is_jq_var?(key), do: false
+  defp is_jq_var?(_key), do: false
 
   def read_mod(mod) do
     case mod do
@@ -212,12 +212,29 @@ defmodule RiichiAdvanced.ModLoader do
   # set debug_status, true # show statuses, counters, and buttons
   """
 
-  def default_config, do: @default_config
+  @builder_mahjong_default_config """
+  # builder-mahjong sample hand that already shows CI/CD Kan tiles (6p 7p 8p 9p)
+
+  set tsumogiri_bots, true
+  set debug_status, true
+  set starting_hand, %{
+    "east": ["1m", "2m", "3m", "4m", "5m", "6m", "3s", "3s", "3s", "6p", "7p", "8p", "9p"],
+    "south": ["3m", "4m", "5m", "6m", "7m", "8m", "1p", "2p", "3p", "4p", "5p", "6p", "7s"],
+    "west": ["3m", "4m", "5m", "6m", "7m", "8m", "1p", "2p", "3p", "4p", "5p", "6p", "8s"],
+    "north": ["3m", "4m", "5m", "6m", "7m", "8m", "1p", "2p", "3p", "4p", "5p", "6p", "9s"]
+  }
+  set starting_draws, ["1z", "1z", "1z", "1z", "1z", "1z", "1z", "1z"]
+  set starting_dead_wall, ["1z"]
+  """
+
+  def default_config, do: default_config(nil)
+  def default_config("builder-mahjong"), do: @builder_mahjong_default_config
+  def default_config(_ruleset), do: @default_config
 
   def get_config_majs(ruleset, room_code) do
     case RiichiAdvanced.ETSCache.get({ruleset, room_code}, nil, :cache_configs) do
       [config_majs] -> config_majs
-      _ -> @default_config
+      _ -> default_config(ruleset)
     end
   end
 

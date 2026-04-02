@@ -1,0 +1,168 @@
+define_const cicd_kan_added_tile,
+  not_match(["call_choice"], ~m"7p:1, 8p:1, 9p:1")
+  or match(["called_tile"], ~m"6p:1")
+
+define_const cicd_ankan_added_tile, match(["called_tile"], ~m"6p:1")
+define_const web_application_kan_added_tile, match(["called_tile"], ~m"9s:1")
+
+define_button cicd_ankan,
+  display_name: "CI/CD Kan",
+  call_name: "ankan",
+  msg_name: "CI/CD Kan",
+  show_when:
+        our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and tile_not_drawn(-4)
+    and self_call_available,
+  precedence_over: ["chii", "pon", "daiminkan"],
+  call: [["7p", "8p", "9p"]],
+  call_conditions: +@cicd_ankan_added_tile,
+  call_style: %{self: ["call", 0, 1, 2]}
+  do
+    big_text("Kan")
+    set_status("kan")
+    self_call
+    do_kan_draw
+  end
+
+define_button web_application_ankan,
+  display_name: "Web Application Kan",
+  call_name: "ankan",
+  msg_name: "Web Application Kan",
+  show_when:
+        our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and tile_not_drawn(-4)
+    and self_call_available,
+  precedence_over: ["chii", "pon", "daiminkan"],
+  call: [["3p", "2m", "7s"], ["3p", "3m", "7s"]],
+  call_conditions: +@web_application_kan_added_tile,
+  call_style: %{self: [0, 1, 2, "call"]}
+  do
+    big_text("Kan")
+    set_status("kan")
+    self_call
+    do_kan_draw
+  end
+
+define_button web_application_daiminkan,
+  display_name: "Web Application Kan",
+  call_name: "daiminkan",
+  msg_name: "Web Application Kan",
+  show_when:
+        not_our_turn
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and tile_not_drawn(-4)
+    and call_available,
+  precedence_over: ["chii", "pon", "daiminkan"],
+  call: [["3p", "2m", "7s"], ["3p", "3m", "7s"]],
+  call_conditions: +@web_application_kan_added_tile,
+  call_style: %{
+    kamicha: [0, 1, 2, "call_sideways"],
+    toimen: [0, 1, "call_sideways", 2],
+    shimocha: [0, "call_sideways", 1, 2]
+  }
+  do
+    big_text("Kan")
+    set_status("kan")
+    call
+    change_turn("self")
+    do_kan_draw
+  end
+
+define_button blue_green_deploy_ankan_3p,
+  display_name: "Blue/Green Deploy Kan",
+  call_name: "ankan",
+  msg_name: "Blue/Green Deploy Kan",
+  show_when:
+        our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and tile_not_drawn(-4)
+    and self_call_available,
+  precedence_over: ["chii", "pon", "daiminkan"],
+  call: [["3m", "6m", "7s"]],
+  call_conditions: match(["called_tile"], ~m"3p:1"),
+  call_style: %{self: ["3p", "3m", "6m", "7s"]}
+  do
+    big_text("Kan")
+    set_status("kan")
+    self_call
+    do_kan_draw
+  end
+
+define_button blue_green_deploy_ankan_3m,
+  display_name: "Blue/Green Deploy Kan",
+  call_name: "ankan",
+  msg_name: "Blue/Green Deploy Kan",
+  show_when:
+        our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and tile_not_drawn(-4)
+    and self_call_available,
+  precedence_over: ["chii", "pon", "daiminkan"],
+  call: [["3p", "6m", "7s"]],
+  call_conditions: match(["called_tile"], ~m"3m:1"),
+  call_style: %{self: ["3p", "3m", "6m", "7s"]}
+  do
+    big_text("Kan")
+    set_status("kan")
+    self_call
+    do_kan_draw
+  end
+
+define_button blue_green_deploy_ankan_6m,
+  display_name: "Blue/Green Deploy Kan",
+  call_name: "ankan",
+  msg_name: "Blue/Green Deploy Kan",
+  show_when:
+        our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and tile_not_drawn(-4)
+    and self_call_available,
+  precedence_over: ["chii", "pon", "daiminkan"],
+  call: [["3p", "3m", "7s"]],
+  call_conditions: match(["called_tile"], ~m"6m:1"),
+  call_style: %{self: ["3p", "3m", "6m", "7s"]}
+  do
+    big_text("Kan")
+    set_status("kan")
+    self_call
+    do_kan_draw
+  end
+
+define_button blue_green_deploy_ankan_7s,
+  display_name: "Blue/Green Deploy Kan",
+  call_name: "ankan",
+  msg_name: "Blue/Green Deploy Kan",
+  show_when:
+        our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and tile_not_drawn(-4)
+    and self_call_available,
+  precedence_over: ["chii", "pon", "daiminkan"],
+  call: [["3p", "3m", "6m"]],
+  call_conditions: match(["called_tile"], ~m"7s:1"),
+  call_style: %{self: ["3p", "3m", "6m", "7s"]}
+  do
+    big_text("Kan")
+    set_status("kan")
+    self_call
+    do_kan_draw
+  end
+
+apply append, "buttons.kakan.call", [["7p", "8p", "9p"]]
+apply append, "buttons.kakan.call_conditions", +@cicd_kan_added_tile
+apply set, "buttons.kakan.upgrades", ["pon", "chii"]

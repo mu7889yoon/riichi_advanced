@@ -1,0 +1,134 @@
+{
+  "config": {
+    "starting_hand": {
+      "east": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"],
+      "south": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"],
+      "west": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"],
+      "north": ["4p", "5p", "3s", "8p", "9p", "7s", "7s", "8m", "6m", "1z", "1z", "5z", "2m"]
+    },
+    "starting_draws": ["6z", "7z", "7p", "6z", "7z", "7s", "6z", "5m"],
+    "tsumogiri_bots": true
+  },
+  "scenes": {
+    "start": [
+      ["add_object", "focus", {"width": 7, "hand_index": 6}],
+      ["add_object", "text", {"size": 0.38, "width": 5.4, "x": 9.8, "y": 6,
+        "text": "Builder Mahjong では\nAWS役を特殊な面子として見ます。\n今回は 1-2飜の基本だけを 1 局で確認します。\n(クリックで続行)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 0}],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 1}],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 2}],
+      ["add_object", "text", {"size": 0.38, "width": 5.4, "x": 9.8, "y": 6,
+        "text": "4p 5p 3s は\nStatic Site Hosting です。\n普通の順子ではなくても\nAWS役なら 1 面子として数えます。\n(クリックで続行)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.38, "width": 5.1, "x": 9.8, "y": 11.75,
+        "text": "まずは西家の 7p まで進めます。"
+      }],
+      ["await_event", ["play_tile", "west", 13]],
+      ["sleep", 200],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 0.75, "x": 5.625, "y": 6.375}],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 3.5}],
+      ["add_object", "text", {"size": 0.38, "width": 5.4, "x": 9.8, "y": 6,
+        "text": "7p と 8p 9p で\nCI/CD Pipeline を作れます。\nこの役は鳴ける 2飜役です。\n(クリックで続行)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
+      ["add_object", "text", {"size": 0.38, "width": 5.1, "x": 9.8, "y": 6,
+        "text": "ここは吃して\n7p を取りましょう。"
+      }],
+      ["force_event", ["press_button", "north", "chii"]],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 2, "x": 15.375, "y": 16}],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 9}],
+      ["add_object", "text", {"size": 0.38, "width": 5.4, "x": 9.8, "y": 6,
+        "text": "鳴いたので門前ではなくなりました。\nCI/CD Pipeline は鳴き版の 1飜です。\n不要な 5z を切ります。"
+      }],
+      ["force_event", ["play_tile", "north", 9]],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.38, "width": 5.1, "x": 9.8, "y": 11.75,
+        "text": "次は 7s を待ちます。"
+      }],
+      ["await_event", ["play_tile", "west", 13]],
+      ["sleep", 200],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 3.5}],
+      ["add_object", "focus", {"width": 0.75, "x": 5.625, "y": 6.375}],
+      ["add_object", "text", {"size": 0.38, "width": 5.4, "x": 9.8, "y": 6,
+        "text": "7s を 3 枚そろえると\nMaster Replica です。\nポンでも鳴き版の 1飜になります。\n(クリックで続行)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
+      ["add_object", "text", {"size": 0.38, "width": 5.1, "x": 9.8, "y": 6,
+        "text": "ポンして形を固定します。"
+      }],
+      ["force_event", ["press_button", "north", "pon"]],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 3}],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 4}],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 7}],
+      ["add_object", "text", {"size": 0.38, "width": 5.4, "x": 9.8, "y": 6,
+        "text": "残す待ちは 5m です。\n8m 6m 5m が Batch になります。\n2m を切って待ちを固定します。"
+      }],
+      ["force_event", ["play_tile", "north", 7]],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.38, "width": 5.1, "x": 9.8, "y": 11.75,
+        "text": "南家の 5m まで進めます。"
+      }],
+      ["await_event", ["play_tile", "south", 13]],
+      ["sleep", 200],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
+      ["add_object", "text", {"size": 0.38, "width": 5.4, "x": 9.8, "y": 6,
+        "text": "ここでロンです。\n複数の AWS役が同時につくことを確認します。"
+      }],
+      ["force_event", ["press_button", "north", "ron"]],
+      ["clear_objects"],
+      ["sleep", 2000],
+      ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
+      ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 5.8,
+        "text": "この和了では\nStatic Site Hosting\nCI/CD Pipeline Open\nMaster Replica Open\nBatch\nが同時につきます。\n3飜以上の AWS役は次フェーズです。\n続きは Builder Mahjong のルール一覧で確認できます。\n(クリックで基本AWS役へ)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "catalog", {
+        "title": "1-2飜のAWS役 1/2",
+        "width": 15.2, "height": 14.1, "x": 0.9, "y": 1.0, "columns": 2,
+        "items": [
+          {"title": "Static Site Hosting", "body": "4p / 5p / 3s を1面子として使う 1飜役。", "example_tiles": ["4p", "5p", "3s"]},
+          {"title": "Serverless API", "body": "2p / 1m / 8s を1面子として使う 1飜役。", "example_tiles": ["2p", "1m", "8s"]},
+          {"title": "Event Driven", "body": "8s / 1m / 8m を1面子として使う 1飜役。", "example_tiles": ["8s", "1m", "8m"]},
+          {"title": "Web Application", "body": "3p / 2m または 3m / 7s を1面子として使う 1飜役。", "example_tiles": ["3p", "3m", "7s"]},
+          {"title": "In-Memory Cache", "body": "2m または 3m / 7s / 9s を1面子として使う 1飜役。", "example_tiles": ["3m", "7s", "9s"]},
+          {"title": "Batch", "body": "8m / 6m / 5m を1面子として使う 1飜役。", "example_tiles": ["8m", "6m", "5m"]},
+          {"title": "Migration", "body": "1p / 7s / 2m を1面子として使う 1飜役。", "example_tiles": ["1p", "7s", "2m"]},
+          {"title": "Job Observer", "body": "9m / 4m / 2m を1面子として使う 1飜役。", "example_tiles": ["9m", "4m", "2m"]}
+        ],
+        "footer": "クリックで続行"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "catalog", {
+        "title": "1-2飜のAWS役 2/2",
+        "width": 15.2, "height": 14.1, "x": 0.9, "y": 1.0, "columns": 2,
+        "items": [
+          {"title": "CI/CD Pipeline", "body": "7p / 8p / 9p を使う 2飜役。門前ならこちら。", "example_tiles": ["7p", "8p", "9p"]},
+          {"title": "CI/CD Pipeline Open", "body": "CI/CD Pipeline を鳴いて作った形。1飜。吃可。", "example_tiles": [{"tile": "7p", "attrs": ["sideways"]}, "8p", "9p"]},
+          {"title": "RAG Agent", "body": "3s / 4s / 5s を使う 2飜役。門前ならこちら。", "example_tiles": ["3s", "4s", "5s"]},
+          {"title": "RAG Agent Open", "body": "RAG Agent を鳴いて作った形。1飜。吃可。", "example_tiles": [{"tile": "3s", "attrs": ["sideways"]}, "4s", "5s"]},
+          {"title": "Master Replica", "body": "7s / 7s / 7s を使う 2飜役。門前ならこちら。", "example_tiles": ["7s", "7s", "7s"]},
+          {"title": "Master Replica Open", "body": "Master Replica を鳴いて作った形。1飜。ポン可。", "example_tiles": [{"tile": "7s", "attrs": ["sideways"]}, "7s", "7s"]}
+        ],
+        "footer": "3飜以上は Tutorial 3 で確認できます。クリックで終了"
+      }],
+      ["await_click"],
+      ["exit"]
+    ]
+  }
+}

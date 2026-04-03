@@ -2680,6 +2680,11 @@ defmodule RiichiAdvanced.Constants do
   def modpacks, do: @modpacks
 
   @tutorials %{
+    "builder-mahjong" => [
+      {"builder_mix_yaku", "麻雀役とAWS役を組み合わせる", :east},
+      {"builder_aws_basics", "AWS役入門: 鳴いて1-2飜を作る", :north},
+      {"builder_aws_advanced", "3飜以上のAWS役を作る", :east}
+    ],
     "riichi" => [
       {"riichi_basics", "Basic flow of the game", :east},
       {"riichi_calls", "Calling tiles", :north}

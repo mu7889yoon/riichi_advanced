@@ -3783,6 +3783,75 @@ div.tutorial-text {
 }
 div.tutorial-text > p:first-child { margin-top: 0; }
 div.tutorial-text > p:last-child { margin-bottom: 0; }
+div.tutorial-catalog {
+  position: absolute;
+  width: calc(var(--width) * var(--tile-size));
+  height: calc(var(--height) * var(--tile-size));
+  left: calc(var(--x) * var(--tile-size));
+  top: calc(var(--y) * var(--tile-size));
+  color: white;
+  background: rgba(55, 55, 55, 0.96);
+  border: calc(0.08 * var(--tile-size)) solid rgba(255, 255, 255, 0.9);
+  border-radius: calc(0.3 * var(--tile-size));
+  padding: calc(0.28 * var(--tile-size));
+  box-sizing: border-box;
+  filter: drop-shadow(0 calc(var(--tile-size) / 12) calc(var(--tile-size) / 8) rgba(0, 0, 0, 0.45));
+  display: flex;
+  flex-direction: column;
+  row-gap: calc(0.2 * var(--tile-size));
+  z-index: 1;
+}
+div.tutorial-catalog-header {
+  font-size: calc(0.42 * var(--tile-size));
+  font-weight: 700;
+  line-height: 1.1;
+}
+div.tutorial-catalog-items {
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  column-gap: calc(0.35 * var(--tile-size));
+  row-gap: calc(0.18 * var(--tile-size));
+  overflow: hidden;
+  flex-grow: 1;
+}
+div.tutorial-catalog-item {
+  min-width: 0;
+}
+div.tutorial-catalog-item-title {
+  font-size: calc(0.5 * var(--tile-size));
+  font-weight: 700;
+  line-height: 1.1;
+  padding-bottom: calc(0.08 * var(--tile-size));
+  border-bottom: calc(0.04 * var(--tile-size)) solid rgba(255, 255, 255, 0.85);
+  margin-bottom: calc(0.08 * var(--tile-size));
+}
+div.tutorial-catalog-item-body {
+  font-size: calc(0.28 * var(--tile-size));
+  line-height: 1.22;
+  color: rgba(255, 255, 255, 0.95);
+}
+div.tutorial-catalog-item-body > p {
+  margin: 0 0 calc(0.06 * var(--tile-size)) 0;
+}
+div.tutorial-catalog-item-body > p:last-child {
+  margin-bottom: 0;
+}
+div.tutorial-catalog-item-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  column-gap: calc(0.04 * var(--tile-size));
+  row-gap: calc(0.06 * var(--tile-size));
+  margin-top: calc(0.12 * var(--tile-size));
+}
+div.tutorial-catalog-item-tiles > div.tile {
+  --tile-scale-factor: 0.42;
+}
+div.tutorial-catalog-footer {
+  text-align: right;
+  font-size: calc(0.24 * var(--tile-size));
+  color: rgba(255, 255, 255, 0.75);
+}
 div.tutorial-focus {
   position: absolute;
   width: 100%;

@@ -213,18 +213,19 @@ defmodule RiichiAdvanced.ModLoader do
   """
 
   @builder_mahjong_default_config """
-  # builder-mahjong sample hand that already shows CI/CD Kan tiles (6p 7p 8p 9p)
-
-  set tsumogiri_bots, true
-  set debug_status, true
-  set starting_hand, %{
-    "east": ["1m", "2m", "3m", "4m", "5m", "6m", "3s", "3s", "3s", "6p", "7p", "8p", "9p"],
-    "south": ["3m", "4m", "5m", "6m", "7m", "8m", "1p", "2p", "3p", "4p", "5p", "6p", "7s"],
-    "west": ["3m", "4m", "5m", "6m", "7m", "8m", "1p", "2p", "3p", "4p", "5p", "6p", "8s"],
-    "north": ["3m", "4m", "5m", "6m", "7m", "8m", "1p", "2p", "3p", "4p", "5p", "6p", "9s"]
-  }
-  set starting_draws, ["1z", "1z", "1z", "1z", "1z", "1z", "1z", "1z"]
-  set starting_dead_wall, ["1z"]
+  # builder-mahjong examples
+  # test hands are disabled by default
+  #
+  # set debug_status, true
+  # set tsumogiri_bots, true
+  # set starting_hand, %{
+  #   "east": ["1m", "2m", "3m", "4m", "5m", "6m", "3s", "3s", "3s", "6p", "7p", "8p", "9p"],
+  #   "south": ["3m", "4m", "5m", "6m", "7m", "8m", "1p", "2p", "3p", "4p", "5p", "6p", "7s"],
+  #   "west": ["3m", "4m", "5m", "6m", "7m", "8m", "1p", "2p", "3p", "4p", "5p", "6p", "8s"],
+  #   "north": ["3m", "4m", "5m", "6m", "7m", "8m", "1p", "2p", "3p", "4p", "5p", "6p", "9s"]
+  # }
+  # set starting_draws, ["1z", "1z", "1z", "1z", "1z", "1z", "1z", "1z"]
+  # set starting_dead_wall, ["1z"]
   """
 
   def default_config, do: default_config(nil)

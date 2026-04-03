@@ -28,10 +28,10 @@ describe('EC2 infrastructure', () => {
     });
   });
 
-  test('ASG has min/max/desired = 1', () => {
+  test('ASG has min=1, max=2, desired=1', () => {
     template.hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       MinSize: '1',
-      MaxSize: '1',
+      MaxSize: '2',
       DesiredCapacity: '1',
     });
   });
@@ -148,13 +148,84 @@ describe('no legacy resources', () => {
 describe('IAM permissions', () => {
   const template = createTemplate();
 
-  test('includes ec2:AssociateAddress', () => {
+  test('instance role does not include ec2:AssociateAddress', () => {
+    // Find the InstanceRole's policy (attached to the EC2 instance role, not Step Functions role)
+    const policies = template.findResources('AWS::IAM::Policy');
+    for (const [logicalId, policy] of Object.entries(policies)) {
+      // Only check policies attached to the InstanceRole (skip Step Functions / Lambda roles)
+      if (!logicalId.startsWith('InstanceRole')) continue;
+      const statements = (policy as any).Properties?.PolicyDocument?.Statement ?? [];
+      for (const stmt of statements) {
+        const actions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
+        expect(actions).not.toContain('ec2:AssociateAddress');
+      }
+    }
+  });
+
+  test('Step Functions role includes required permissions', () => {
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
-          Match.objectLike({ Action: 'ec2:AssociateAddress', Effect: 'Allow' }),
+          Match.objectLike({
+            Action: Match.arrayWith([
+              'ec2:DescribeAddresses',
+              'ec2:AssociateAddress',
+              'ec2:DescribeInstances',
+              'ec2:TerminateInstances',
+              'autoscaling:SetDesiredCapacity',
+              'autoscaling:DescribeAutoScalingGroups',
+            ]),
+            Effect: 'Allow',
+          }),
         ]),
       },
     });
+  });
+});
+
+describe('Blue/Green Deploy resources', () => {
+  const template = createTemplate();
+
+  test('StateMachine resource exists', () => {
+    template.hasResource('AWS::StepFunctions::StateMachine', {});
+  });
+
+  test('Health check Lambda function exists with Node.js 20.x runtime', () => {
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Runtime: 'nodejs20.x',
+      Handler: 'index.handler',
+    });
+  });
+
+  test('Find green Lambda function exists', () => {
+    // There should be at least 2 Lambda functions (health-check + find-green)
+    const lambdas = template.findResources('AWS::Lambda::Function');
+    expect(Object.keys(lambdas).length).toBeGreaterThanOrEqual(2);
+  });
+
+  test('State machine has a 15-minute timeout', () => {
+    const stateMachines = template.findResources('AWS::StepFunctions::StateMachine');
+    const logicalIds = Object.keys(stateMachines);
+    expect(logicalIds.length).toBe(1);
+
+    // DefinitionString is a Fn::Join with mixed string/intrinsic parts
+    const defString = stateMachines[logicalIds[0]].Properties.DefinitionString;
+    const parts: unknown[] = defString['Fn::Join'][1];
+    const stringParts = parts.filter((p): p is string => typeof p === 'string').join('');
+    expect(stringParts).toContain('"TimeoutSeconds":900');
+  });
+
+  test('Lambda functions have 10-second timeouts', () => {
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Timeout: 10,
+    });
+  });
+
+  test('CfnOutput exists for DeployStateMachineArn', () => {
+    template.hasOutput('DeployStateMachineArn', {});
+  });
+
+  test('CfnOutput exists for ASGName', () => {
+    template.hasOutput('ASGName', {});
   });
 });

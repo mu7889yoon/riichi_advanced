@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
+  alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvancedWeb.Translations
   use RiichiAdvancedWeb, :live_component
 
@@ -79,6 +80,31 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
           <% "text" -> %>
             <div class="tutorial-text" style={"--width: #{Map.get(params, "width", 0)}; --size: #{Map.get(params, "size", 0.5)}; --x: #{Map.get(params, "x", 0)}; --y: #{Map.get(params, "y", 0)}"}>
               <p :for={p <- String.split(params["text"], "\n")}><%= dt(@lang, p) %></p>
+            </div>
+          <% "catalog" -> %>
+            <div class="tutorial-catalog" style={"--width: #{Map.get(params, "width", 0)}; --height: #{Map.get(params, "height", 0)}; --x: #{Map.get(params, "x", 0)}; --y: #{Map.get(params, "y", 0)}; --columns: #{Map.get(params, "columns", 2)}"}>
+              <div class="tutorial-catalog-header" :if={Map.get(params, "title", nil) != nil}>
+                <%= dt(@lang, Map.get(params, "title", "")) %>
+              </div>
+              <div class="tutorial-catalog-items">
+                <div class="tutorial-catalog-item" :for={item <- Map.get(params, "items", [])}>
+                  <div class="tutorial-catalog-item-title">
+                    <%= dt(@lang, Map.get(item, "title", "")) %>
+                  </div>
+                  <div class="tutorial-catalog-item-body">
+                    <p :for={p <- String.split(Map.get(item, "body", ""), "\n")}><%= dt(@lang, p) %></p>
+                  </div>
+                  <div class="tutorial-catalog-item-tiles" :if={Map.get(item, "example_tiles", []) != []}>
+                    <div
+                      :for={{tile, i} <- Enum.with_index(Map.get(item, "example_tiles", []))}
+                      class={Utils.get_tile_class(Utils.to_tile(tile), i)}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div class="tutorial-catalog-footer" :if={Map.get(params, "footer", nil) != nil}>
+                <%= dt(@lang, Map.get(params, "footer", "")) %>
+              </div>
             </div>
           <% _ -> %>
             <div>

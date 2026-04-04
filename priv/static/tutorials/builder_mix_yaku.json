@@ -1,0 +1,72 @@
+{
+  "config": {
+    "starting_hand": {
+      "east": ["2m", "2m", "3m", "3m", "4m", "4m", "4p", "5p", "3s", "6s", "7s", "6p", "6p"],
+      "south": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"],
+      "west": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"],
+      "north": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"]
+    },
+    "starting_draws": ["5z", "1z", "2z", "8s"],
+    "tsumogiri_bots": true
+  },
+  "scenes": {
+    "start": [
+      ["add_object", "focus", {"width": 7, "hand_index": 6}],
+      ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
+        "text": "Tutorial 1 です。\n今回は AWS役だけでなく\n麻雀役と重ねて和了を作ります。\n(クリックで続行)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 2.1, "hand_index": 1}],
+      ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
+        "text": "2m 3m 4m が 2 組あります。\nこれは麻雀役の Iipeikou です。\n(クリックで続行)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 6}],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 7}],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 8}],
+      ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
+        "text": "4p 5p 3s は\nAWS役の Static Site Hosting です。\n普通の麻雀役と同時に数えられます。\n(クリックで続行)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 0.75, "draw_index": 13}],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 9.5}],
+      ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
+        "text": "今のツモは 5z です。\nこれを切ると 6s 7s の形で 8s 待ちになり、\n手牌全体も Tanyao になります。"
+      }],
+      ["force_event", ["play_tile", "east", 13]],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.38, "width": 5.1, "x": 9.8, "y": 11.75,
+        "text": "北家の 8s まで進めます。"
+      }],
+      ["await_event", ["play_tile", "north", 13]],
+      ["sleep", 200],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
+      ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
+        "text": "ロンしましょう。\nIipeikou と Tanyao に\nStatic Site Hosting も重なります。"
+      }],
+      ["force_event", ["press_button", "east", "ron"]],
+      ["clear_objects"],
+      ["sleep", 2000],
+      ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
+      ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 5.8,
+        "text": "この和了では\nIipeikou\nTanyao\nStatic Site Hosting\nが同時につきます。\nBuilder Mahjong では\n麻雀役と AWS役を重ねて打点を作れます。\n(クリックで今回のAWS役へ)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "catalog", {
+        "title": "今回登場したAWS役",
+        "width": 15.2, "height": 8.0, "x": 0.9, "y": 3.2, "columns": 1,
+        "items": [
+          {"title": "Static Site Hosting", "body": "4p / 5p / 3s を1面子として使う 1飜役。", "example_tiles": ["4p", "5p", "3s"]}
+        ],
+        "footer": "クリックで終了"
+      }],
+      ["await_click"],
+      ["exit"]
+    ]
+  }
+}

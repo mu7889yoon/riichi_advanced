@@ -1,0 +1,76 @@
+{
+  "config": {
+    "starting_hand": {
+      "east": ["2m", "3m", "4m", "3m", "4m", "5m", "3s", "4s", "6s", "6s", "7p", "8p", "9p"],
+      "south": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"],
+      "west": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"],
+      "north": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"]
+    },
+    "starting_draws": ["6p"],
+    "starting_dead_wall": ["5s"],
+    "tsumogiri_bots": true
+  },
+  "scenes": {
+    "start": [
+      ["add_object", "focus", {"width": 7, "hand_index": 6}],
+      ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
+        "text": "Tutorial 3 です。\nここでは 3飜以上の AWS役を作ります。\n代表例は CI/CD Kan です。\n(クリックで続行)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 11}],
+      ["add_object", "focus", {"width": 0.75, "draw_index": 13}],
+      ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
+        "text": "7p 8p 9p に 6p を足すと\nCI/CD Kan になります。\nこの役は門前なら 3飜です。"
+      }],
+      ["force_event", ["press_button", "east", "cicd_ankan"]],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
+        "text": "嶺上の 5s で 3s 4s 5s も完成しました。\nこれは 2飜役の RAG Agent です。\nさらに嶺上開花と\n形のよい平和も付きます。\n(クリックで続行)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "focus", {"width": 1.5, "x": 11.75, "y": "buttons"}],
+      ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
+        "text": "もう和了形です。\nツモして 3飜以上の形を確認します。"
+      }],
+      ["force_event", ["press_button", "east", "tsumo"]],
+      ["clear_objects"],
+      ["sleep", 2000],
+      ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
+      ["add_object", "text", {"size": 0.38, "width": 5.7, "x": 9.3, "y": 5.5,
+        "text": "この和了では\nCI/CD Kan (3飜)\nRAG Agent (2飜)\nツモ / 嶺上開花 / 平和\nも重なります。\n他にも Web Application Kan\nBlue/Green Deploy Kan\nServerlesspresso などがあります。\n(クリックで上位AWS役へ)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "catalog", {
+        "title": "3飜以上のAWS役 1/2",
+        "width": 15.2, "height": 14.1, "x": 0.9, "y": 1.0, "columns": 2,
+        "items": [
+          {"title": "CI/CD Kan", "body": "6p / 7p / 8p / 9p を使う 3飜役。門前ならこちら。", "example_tiles": ["6p", "7p", "8p", "9p"]},
+          {"title": "CI/CD Kan Open", "body": "CI/CD Kan を鳴いて作った形。2飜。", "example_tiles": [{"tile": "6p", "attrs": ["sideways"]}, "7p", "8p", "9p"]},
+          {"title": "Web Application Kan", "body": "3p / 2m または 3m / 7s / 9s を使う 3飜役。門前ならこちら。", "example_tiles": ["3p", "3m", "7s", "9s"]},
+          {"title": "Web Application Kan Open", "body": "Web Application Kan を鳴いて作った形。2飜。", "example_tiles": [{"tile": "3p", "attrs": ["sideways"]}, "3m", "7s", "9s"]},
+          {"title": "Blue/Green Deploy Kan", "body": "3p / 3m / 6m / 7s を使う 3飜役。門前限定。", "example_tiles": ["3p", "3m", "6m", "7s"]},
+          {"title": "Serverlesspresso", "body": "2p / 1m / 8s と 8m / 7m / 1m をまとめて使う 3飜役。門前限定。", "example_tiles": ["2p", "1m", "8s", "8m", "7m", "1m"]},
+          {"title": "AWS Redundancy", "body": "同じ AWS役の面子を2つ作る 3飜役。門前限定。", "example_tiles": ["4p", "5p", "3s", "4p", "5p", "3s"]},
+          {"title": "AWS 3AZ", "body": "同じ AWS役の面子を3つ作る 3飜役。門前限定。", "example_tiles": ["4p", "5p", "3s", "4p", "5p", "3s", "4p", "5p", "3s"]}
+        ],
+        "footer": "クリックで続行"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "catalog", {
+        "title": "3飜以上のAWS役 2/2",
+        "width": 15.2, "height": 14.1, "x": 0.9, "y": 1.0, "columns": 2,
+        "items": [
+          {"title": "DR Architecture", "body": "特定の七対子パターン + 風牌2組で作る AWS役満。門前限定。", "example_tiles": ["5p", "5p", "3p", "3p", "2m", "2m", "7s", "7s", "3s", "3s", "1z", "1z", "2z", "2z"]},
+          {"title": "AWS All Green", "body": "1s 2s 3s 4s 5s 6s と 6z だけで作る AWS役満。", "example_tiles": ["1s", "2s", "3s", "1s", "2s", "3s", "4s", "5s", "6s", "4s", "5s", "6s", "6z", "6z"]}
+        ],
+        "footer": "1-2飜は Tutorial 1 と 2 で確認できます。クリックで終了"
+      }],
+      ["await_click"],
+      ["exit"]
+    ]
+  }
+}

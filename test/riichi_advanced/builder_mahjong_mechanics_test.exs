@@ -6,6 +6,41 @@ defmodule RiichiAdvanced.BuilderMahjongMechanicsTest do
   alias RiichiAdvanced.TestUtils, as: TestUtils
   alias RiichiAdvanced.Utils, as: Utils
 
+  test "builder-mahjong - tutorial 1 hand combines mahjong yaku with an AWS yaku" do
+    TestUtils.test_yaku_advanced(
+      "builder-mahjong",
+      [],
+      """
+      {
+        "starting_hand": {
+          "east": ["2m", "2m", "3m", "3m", "4m", "4m", "4p", "5p", "3s", "6s", "7s", "6p", "6p"],
+          "south": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"],
+          "west": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"],
+          "north": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"]
+        },
+        "starting_draws": ["5z", "1z", "2z", "8s"]
+      }
+      """,
+      [
+        %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => true},
+        %{"type" => "discard", "tile" => "1z", "player" => 1, "tsumogiri" => true},
+        %{"type" => "discard", "tile" => "2z", "player" => 2, "tsumogiri" => true},
+        %{"type" => "discard", "tile" => "8s", "player" => 3, "tsumogiri" => true},
+        %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+      ],
+      %{
+        east: %{
+          yaku: [
+            {"Iipeikou", 1},
+            {"Static Site Hosting", 1},
+            {"Tanyao", 1}
+          ],
+          yaku2: []
+        }
+      }
+    )
+  end
+
   test "builder-mahjong - CI/CD Kan can be declared by adding 6p to a closed 789p" do
     test_state =
       TestUtils.initialize_test_state("builder-mahjong", [], """
@@ -258,6 +293,99 @@ defmodule RiichiAdvanced.BuilderMahjongMechanicsTest do
       %{
         east: %{
           yaku: [{"Blue/Green Deploy Kan", 3}, {"Web Application", 1}],
+          yaku2: []
+        }
+      }
+    )
+  end
+
+  test "builder-mahjong - tutorial basics hand scores the intended 1-2 han AWS yaku" do
+    TestUtils.test_yaku_advanced(
+      "builder-mahjong",
+      [],
+      """
+      {
+        "starting_hand": {
+          "east": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"],
+          "south": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"],
+          "west": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"],
+          "north": ["4p", "5p", "3s", "8p", "9p", "7s", "7s", "8m", "6m", "1z", "1z", "5z", "2m"]
+        },
+        "starting_draws": ["6z", "7z", "7p", "6z", "7z", "7s", "6z", "5m"]
+      }
+      """,
+      [
+        %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+        %{"type" => "discard", "tile" => "7z", "player" => 1, "tsumogiri" => true},
+        %{"type" => "discard", "tile" => "7p", "player" => 2, "tsumogiri" => true},
+        %{
+          "type" => "buttons_pressed",
+          "buttons" => [nil, nil, nil, %{"button" => "chii", "call_choice" => ["8p", "9p"], "called_tile" => "7p"}]
+        },
+        %{"type" => "discard", "tile" => "5z", "player" => 3, "tsumogiri" => false},
+        %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+        %{"type" => "discard", "tile" => "7z", "player" => 1, "tsumogiri" => true},
+        %{"type" => "discard", "tile" => "7s", "player" => 2, "tsumogiri" => true},
+        %{
+          "type" => "buttons_pressed",
+          "buttons" => [nil, nil, nil, %{"button" => "pon", "call_choice" => ["7s", "7s"], "called_tile" => "7s"}]
+        },
+        %{"type" => "discard", "tile" => "2m", "player" => 3, "tsumogiri" => false},
+        %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+        %{"type" => "discard", "tile" => "5m", "player" => 1, "tsumogiri" => true},
+        %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ron"}]}
+      ],
+      %{
+        north: %{
+          yaku: [
+            {"Batch", 1},
+            {"CI/CD Pipeline Open", 1},
+            {"Master Replica Open", 1},
+            {"Static Site Hosting", 1}
+          ],
+          yaku2: []
+        }
+      }
+    )
+  end
+
+  test "builder-mahjong - tutorial 3 hand stacks a 3 han AWS yaku with follow-up value" do
+    TestUtils.test_yaku_advanced(
+      "builder-mahjong",
+      [],
+      """
+      {
+        "starting_hand": {
+          "east": ["2m", "3m", "4m", "3m", "4m", "5m", "3s", "4s", "6s", "6s", "7p", "8p", "9p"],
+          "south": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"],
+          "west": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"],
+          "north": ["1m", "4m", "7m", "1p", "4p", "7p", "2s", "5s", "8s", "5z", "2z", "3z", "4z"]
+        },
+        "starting_draws": ["6p"],
+        "starting_dead_wall": ["5s"]
+      }
+      """,
+      [
+        %{
+          "type" => "buttons_pressed",
+          "buttons" => [
+            %{"button" => "cicd_ankan", "call_choice" => ["7p", "8p", "9p"], "called_tile" => "6p"},
+            nil,
+            nil,
+            nil
+          ]
+        },
+        %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+      ],
+      %{
+        east: %{
+          yaku: [
+            {"CI/CD Kan", 3},
+            {"Pinfu", 1},
+            {"RAG Agent", 2},
+            {"Rinshan", 1},
+            {"Tsumo", 1}
+          ],
           yaku2: []
         }
       }

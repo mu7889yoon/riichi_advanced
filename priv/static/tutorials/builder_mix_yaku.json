@@ -19,7 +19,7 @@
       ["clear_objects"],
       ["add_object", "focus", {"width": 2.1, "hand_index": 1}],
       ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
-        "text": "二萬 三萬 四萬 が 2 組あります。\nこれは麻雀役の Iipeikou です。\n(クリックで続行)"
+        "text": "二萬 三萬 四萬 が 2 組あります。\nこれは麻雀役の 一盃口です。\n(クリックで続行)"
       }],
       ["await_click"],
       ["clear_objects"],
@@ -27,33 +27,33 @@
       ["add_object", "focus", {"width": 0.75, "hand_index": 7}],
       ["add_object", "focus", {"width": 0.75, "hand_index": 8}],
       ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
-        "text": "四筒(CloudFront)  五筒(Route53) 三索(S3) は\nAWS役の Static Site Hosting です。\n普通の麻雀役と同時に数えられます。\n(クリックで続行)"
+        "text": "四筒(CloudFront) 五筒(Route53) 三索(S3) は\nAWS役の Static Site Hosting です。\n普通の麻雀役と同時に数えられます。\n(クリックで続行)"
       }],
       ["await_click"],
       ["clear_objects"],
       ["add_object", "focus", {"width": 0.75, "draw_index": 13}],
       ["add_object", "focus", {"width": 1.25, "hand_index": 9.5}],
       ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
-        "text": "今のツモは 白(Kiro) です。\nこれを切ると 六索 七索 の形で 八索 待ちになり、\n手牌全体も Tanyao になります。"
+        "text": "今のツモは 白(Kiro) です。\nこれを切ると 六索(SageMaker) 七索(Aurora) の形で\n八索(DynamoDB) 待ちになり、\n手牌全体も 断么中 になります。"
       }],
       ["force_event", ["play_tile", "east", 13]],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.38, "width": 5.1, "x": 9.8, "y": 11.75,
-        "text": "八索 をツモる・誰かが 八索 を捨てるまで待ちます。"
+        "text": "八索(DynamoDB) をツモる・誰かが\n八索(DynamoDB) を捨てるまで待ちます。"
       }],
       ["await_event", ["play_tile", "north", 13]],
       ["sleep", 200],
       ["clear_objects"],
       ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
       ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
-        "text": "ロンしましょう。\nIipeikou と Tanyao に\nStatic Site Hosting も重なります。"
+        "text": "ロンしましょう。\n一盃口 と 断么中 に\nStatic Site Hosting も重なります。"
       }],
       ["force_event", ["press_button", "east", "ron"]],
       ["clear_objects"],
       ["sleep", 2000],
       ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
       ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 5.8,
-        "text": "この和了では\nIipeikou\nTanyao\nStatic Site Hosting\nが同時につきます。\nBuilder Mahjong では\n麻雀役と AWS役を重ねて打点を作れます。\n(クリックで今回のAWS役へ)"
+        "text": "この和了では\n一盃口\n断么中\nStatic Site Hosting\nが同時につきます。\nBuilder Mahjong では\n麻雀役と AWS役を重ねて打点を作れます。\n(クリックで今回のAWS役へ)"
       }],
       ["await_click"],
       ["clear_objects"],
@@ -61,7 +61,7 @@
         "title": "今回登場したAWS役",
         "width": 15.2, "height": 8.0, "x": 0.9, "y": 3.2, "columns": 1,
         "items": [
-          {"title": "Static Site Hosting", "body": "4p / 5p / 3s を1面子として使う 1飜役。", "example_tiles": ["4p", "5p", "3s"]}
+          {"title": "Static Site Hosting", "body": "四筒(CloudFront) / 五筒(Route53) / 三索(S3) を1面子として使う 1飜役。", "example_tiles": ["4p", "5p", "3s"]}
         ],
         "footer": "クリックで終了"
       }],

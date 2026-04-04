@@ -13,7 +13,7 @@
     "start": [
       ["add_object", "focus", {"width": 7, "hand_index": 6}],
       ["add_object", "text", {"size": 0.38, "width": 5.4, "x": 9.8, "y": 6,
-        "text": "Builder Mahjong では\nAWS役を特殊な面子として見ます。\n今回は 1-2飜の基本だけを 1 局で確認します。\n(クリックで続行)"
+        "text": "Builder Mahjong では\nAWS役を特殊な面子として見ます。\n今回は 1-2飜の基本役を確認します。\n(クリックで続行)"
       }],
       ["await_click"],
       ["clear_objects"],
@@ -21,46 +21,40 @@
       ["add_object", "focus", {"width": 0.75, "hand_index": 1}],
       ["add_object", "focus", {"width": 0.75, "hand_index": 2}],
       ["add_object", "text", {"size": 0.38, "width": 5.4, "x": 9.8, "y": 6,
-        "text": "4p 5p 3s は\nStatic Site Hosting です。\n普通の順子ではなくても\nAWS役なら 1 面子として数えます。\n(クリックで続行)"
+        "text": "四筒(CloudFront) 五筒(Route53) 三索(S3) は\nStatic Site Hosting です。\n普通の順子ではなくても\nAWS役なら 1 面子として数えます。\n(クリックで続行)"
       }],
       ["await_click"],
       ["clear_objects"],
-      ["add_object", "text", {"size": 0.38, "width": 5.1, "x": 9.8, "y": 11.75,
-        "text": "まずは西家の 7p まで進めます。"
-      }],
       ["await_event", ["play_tile", "west", 13]],
       ["sleep", 200],
       ["clear_objects"],
       ["add_object", "focus", {"width": 0.75, "x": 5.625, "y": 6.375}],
       ["add_object", "focus", {"width": 1.25, "hand_index": 3.5}],
       ["add_object", "text", {"size": 0.38, "width": 5.4, "x": 9.8, "y": 6,
-        "text": "7p と 8p 9p で\nCI/CD Pipeline を作れます。\nこの役は鳴ける 2飜役です。\n(クリックで続行)"
+        "text": "七筒(CodeCommit) 八筒(CodeBuild) 九筒(CodeDeploy) で\nCI/CD Pipeline を作れます。\nこの役は鳴ける 2飜役です。\n(クリックで続行)"
       }],
       ["await_click"],
       ["clear_objects"],
       ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
       ["add_object", "text", {"size": 0.38, "width": 5.1, "x": 9.8, "y": 6,
-        "text": "ここは吃して\n7p を取りましょう。"
+        "text": "ここは吃(チー)して\n七筒(CodeCommit) を取りましょう。"
       }],
       ["force_event", ["press_button", "north", "chii"]],
       ["clear_objects"],
       ["add_object", "focus", {"width": 2, "x": 15.375, "y": 16}],
       ["add_object", "focus", {"width": 0.75, "hand_index": 9}],
       ["add_object", "text", {"size": 0.38, "width": 5.4, "x": 9.8, "y": 6,
-        "text": "鳴いたので門前ではなくなりました。\nCI/CD Pipeline は鳴き版の 1飜です。\n不要な 5z を切ります。"
+        "text": "鳴いたので門前ではなくなりました。\nCI/CD Pipeline は鳴き1飜です。\n不要な 白(Kiro) を切ります。"
       }],
       ["force_event", ["play_tile", "north", 9]],
       ["clear_objects"],
-      ["add_object", "text", {"size": 0.38, "width": 5.1, "x": 9.8, "y": 11.75,
-        "text": "次は 7s を待ちます。"
-      }],
       ["await_event", ["play_tile", "west", 13]],
       ["sleep", 200],
       ["clear_objects"],
       ["add_object", "focus", {"width": 1.25, "hand_index": 3.5}],
       ["add_object", "focus", {"width": 0.75, "x": 5.625, "y": 6.375}],
       ["add_object", "text", {"size": 0.38, "width": 5.4, "x": 9.8, "y": 6,
-        "text": "7s を 3 枚そろえると\nMaster Replica です。\nポンでも鳴き版の 1飜になります。\n(クリックで続行)"
+        "text": "七索(Aurora) を 3 枚そろえると\nMaster Replica です。\n鳴き1飜になります。\n(クリックで続行)"
       }],
       ["await_click"],
       ["clear_objects"],
@@ -74,19 +68,19 @@
       ["add_object", "focus", {"width": 0.75, "hand_index": 4}],
       ["add_object", "focus", {"width": 0.75, "hand_index": 7}],
       ["add_object", "text", {"size": 0.38, "width": 5.4, "x": 9.8, "y": 6,
-        "text": "残す待ちは 5m です。\n8m 6m 5m が Batch になります。\n2m を切って待ちを固定します。"
+        "text": "八萬(EventBridge) 六萬(ECR) 五萬(Batch) で\nBatch になります。\n二萬(EC2) を切って待ちを固定します。"
       }],
       ["force_event", ["play_tile", "north", 7]],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.38, "width": 5.1, "x": 9.8, "y": 11.75,
-        "text": "南家の 5m まで進めます。"
+        "text": "五萬(Batch) をツモる・誰かが 五萬(Batch) を捨てるまで待ちます。"
       }],
       ["await_event", ["play_tile", "south", 13]],
       ["sleep", 200],
       ["clear_objects"],
       ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
       ["add_object", "text", {"size": 0.38, "width": 5.4, "x": 9.8, "y": 6,
-        "text": "ここでロンです。\n複数の AWS役が同時につくことを確認します。"
+        "text": "ここでロンです。"
       }],
       ["force_event", ["press_button", "north", "ron"]],
       ["clear_objects"],
@@ -101,14 +95,14 @@
         "title": "1-2飜のAWS役 1/2",
         "width": 15.2, "height": 14.1, "x": 0.9, "y": 1.0, "columns": 2,
         "items": [
-          {"title": "Static Site Hosting", "body": "4p / 5p / 3s を1面子として使う 1飜役。", "example_tiles": ["4p", "5p", "3s"]},
-          {"title": "Serverless API", "body": "2p / 1m / 8s を1面子として使う 1飜役。", "example_tiles": ["2p", "1m", "8s"]},
-          {"title": "Event Driven", "body": "8s / 1m / 8m を1面子として使う 1飜役。", "example_tiles": ["8s", "1m", "8m"]},
-          {"title": "Web Application", "body": "3p / 2m または 3m / 7s を1面子として使う 1飜役。", "example_tiles": ["3p", "3m", "7s"]},
-          {"title": "In-Memory Cache", "body": "2m または 3m / 7s / 9s を1面子として使う 1飜役。", "example_tiles": ["3m", "7s", "9s"]},
-          {"title": "Batch", "body": "8m / 6m / 5m を1面子として使う 1飜役。", "example_tiles": ["8m", "6m", "5m"]},
-          {"title": "Migration", "body": "1p / 7s / 2m を1面子として使う 1飜役。", "example_tiles": ["1p", "7s", "2m"]},
-          {"title": "Job Observer", "body": "9m / 4m / 2m を1面子として使う 1飜役。", "example_tiles": ["9m", "4m", "2m"]}
+          {"title": "Static Site Hosting", "body": "四筒(CloudFront) / 五筒(Route53) / 三索(S3) を1面子として使う 1飜役。", "example_tiles": ["4p", "5p", "3s"]},
+          {"title": "Serverless API", "body": "二筒(API Gateway) / 一萬(Lambda) / 八索(DynamoDB) を1面子として使う 1飜役。", "example_tiles": ["2p", "1m", "8s"]},
+          {"title": "Event Driven", "body": "八索(DynamoDB) / 一萬(Lambda) / 八萬(EventBridge) を1面子として使う 1飜役。", "example_tiles": ["8s", "1m", "8m"]},
+          {"title": "Web Application", "body": "三筒(ELB) / 二萬(EC2) または 三萬(ECS) / 七索(Aurora) を1面子として使う 1飜役。", "example_tiles": ["3p", "3m", "7s"]},
+          {"title": "In-Memory Cache", "body": "二萬(EC2) または 三萬(ECS) / 七索(Aurora) / 九索(ElastiCache) を1面子として使う 1飜役。", "example_tiles": ["3m", "7s", "9s"]},
+          {"title": "Batch", "body": "八萬(EventBridge) / 六萬(ECR) / 五萬(Batch) を1面子として使う 1飜役。", "example_tiles": ["8m", "6m", "5m"]},
+          {"title": "Migration", "body": "一筒(Direct Connect) / 七索(Aurora) / 二萬(EC2) を1面子として使う 1飜役。", "example_tiles": ["1p", "7s", "2m"]},
+          {"title": "Job Observer", "body": "九萬(SQS) / 四萬(Auto Scaling) / 二萬(EC2) を1面子として使う 1飜役。", "example_tiles": ["9m", "4m", "2m"]}
         ],
         "footer": "クリックで続行"
       }],
@@ -118,11 +112,11 @@
         "title": "1-2飜のAWS役 2/2",
         "width": 15.2, "height": 14.1, "x": 0.9, "y": 1.0, "columns": 2,
         "items": [
-          {"title": "CI/CD Pipeline", "body": "7p / 8p / 9p を使う 2飜役。門前ならこちら。", "example_tiles": ["7p", "8p", "9p"]},
+          {"title": "CI/CD Pipeline", "body": "七筒(CodeCommit) / 八筒(CodeBuild) / 九筒(CodeDeploy) を使う 2飜役。門前ならこちら。", "example_tiles": ["7p", "8p", "9p"]},
           {"title": "CI/CD Pipeline Open", "body": "CI/CD Pipeline を鳴いて作った形。1飜。吃可。", "example_tiles": [{"tile": "7p", "attrs": ["sideways"]}, "8p", "9p"]},
-          {"title": "RAG Agent", "body": "3s / 4s / 5s を使う 2飜役。門前ならこちら。", "example_tiles": ["3s", "4s", "5s"]},
+          {"title": "RAG Agent", "body": "三索(S3) / 四索(Bedrock AgentCore) / 五索(Bedrock) を使う 2飜役。門前ならこちら。", "example_tiles": ["3s", "4s", "5s"]},
           {"title": "RAG Agent Open", "body": "RAG Agent を鳴いて作った形。1飜。吃可。", "example_tiles": [{"tile": "3s", "attrs": ["sideways"]}, "4s", "5s"]},
-          {"title": "Master Replica", "body": "7s / 7s / 7s を使う 2飜役。門前ならこちら。", "example_tiles": ["7s", "7s", "7s"]},
+          {"title": "Master Replica", "body": "七索(Aurora) / 七索(Aurora) / 七索(Aurora) を使う 2飜役。門前ならこちら。", "example_tiles": ["7s", "7s", "7s"]},
           {"title": "Master Replica Open", "body": "Master Replica を鳴いて作った形。1飜。ポン可。", "example_tiles": [{"tile": "7s", "attrs": ["sideways"]}, "7s", "7s"]}
         ],
         "footer": "3飜以上は Tutorial 3 で確認できます。クリックで終了"

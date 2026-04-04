@@ -7,7 +7,7 @@ const app = new cdk.App();
 const certificateArn = app.node.tryGetContext('certificateArn');
 const domainName = app.node.tryGetContext('domainName');
 
-new AwsMahjongCdkStack(app, 'AwsMahjongCdkStack2', {
+new AwsMahjongCdkStack(app, 'AwsMahjongCdkStack', {
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION,

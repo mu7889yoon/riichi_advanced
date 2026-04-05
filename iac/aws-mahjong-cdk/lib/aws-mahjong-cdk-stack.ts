@@ -9,11 +9,6 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
-import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as lambda_nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
-import * as cr from 'aws-cdk-lib/custom-resources';
 import * as path from 'node:path';
 
 export interface AwsMahjongCdkStackProps extends cdk.StackProps {
@@ -65,6 +60,11 @@ export class AwsMahjongCdkStack extends cdk.Stack {
       ],
     });
 
+    instanceRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['ec2:AssociateAddress'],
+      resources: ['*'],
+    }));
+
     // --- Docker Image Asset ---
     const dockerImage = new ecr_assets.DockerImageAsset(this, 'AppImage', {
       directory: path.join(__dirname, '../../../'),
@@ -93,6 +93,10 @@ export class AwsMahjongCdkStack extends cdk.Stack {
     userData.addCommands(
       'set -euxo pipefail',
       'exec > /var/log/user-data.log 2>&1',
+
+      // Associate Elastic IP
+      `INSTANCE_ID=$(ec2-metadata -i | cut -d" " -f2)`,
+      `aws ec2 associate-address --instance-id "$INSTANCE_ID" --allocation-id ${eip.attrAllocationId} --region ${this.region}`,
 
       // Install Docker
       'yum update -y',
@@ -125,16 +129,14 @@ export class AwsMahjongCdkStack extends cdk.Stack {
     });
 
     // --- Auto Scaling Group ---
-    const asg = new autoscaling.AutoScalingGroup(this, 'ASG', {
+    new autoscaling.AutoScalingGroup(this, 'ASG', {
       vpc: vpc,
       launchTemplate: launchTemplate,
       minCapacity: 1,
-      maxCapacity: 2,
+      maxCapacity: 1,
       desiredCapacity: 1,
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
-
-    new cdk.CfnOutput(this, 'ASGName', { value: asg.autoScalingGroupName });
 
     // --- CloudFront ---
     // Build EIP public DNS: ec2-{IP-with-dashes}.{region}.compute.amazonaws.com
@@ -228,334 +230,5 @@ export class AwsMahjongCdkStack extends cdk.Stack {
       `  -e PHX_HOST=${phxHost} \\`,
       `  ${dockerImage.imageUri}`,
     );
-
-    // =========================================================
-    // Step Functions Blue/Green Deploy
-    // =========================================================
-
-    // --- Task 4.2: Health Check Lambda ---
-    const healthCheckLambda = new lambda_nodejs.NodejsFunction(this, 'HealthCheckFunction', {
-      entry: path.join(__dirname, '../lambda/health-check/index.ts'),
-      handler: 'handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
-      timeout: cdk.Duration.seconds(10),
-    });
-
-    // --- Find Green Instance Lambda ---
-    const findGreenLambda = new lambda_nodejs.NodejsFunction(this, 'FindGreenFunction', {
-      entry: path.join(__dirname, '../lambda/find-green/index.ts'),
-      handler: 'handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
-      timeout: cdk.Duration.seconds(10),
-    });
-
-    // Task 4.1: FindGreen Lambda needs ASG + EC2 permissions
-    findGreenLambda.addToRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'autoscaling:DescribeAutoScalingGroups',
-        'ec2:DescribeInstances',
-      ],
-      resources: ['*'],
-    }));
-
-    // --- Task 4.3: State Machine Main Flow ---
-
-    // 1. GetDeploymentParams (Pass State)
-    const getDeploymentParams = new sfn.Pass(this, 'GetDeploymentParams', {
-      parameters: {
-        'eipAllocationId.$': '$.eipAllocationId',
-        'asgName.$': '$.asgName',
-        'healthCheckPort.$': '$.healthCheckPort',
-        'healthCheckPath.$': '$.healthCheckPath',
-        'maxRetries.$': '$.maxRetries',
-        'retryCount': 0,
-      },
-    });
-
-    // 2. GetBlueInstanceId (SDK integration: EC2 DescribeAddresses)
-    const getBlueInstanceId = new tasks.CallAwsService(this, 'GetBlueInstanceId', {
-      service: 'ec2',
-      action: 'describeAddresses',
-      parameters: {
-        AllocationIds: sfn.JsonPath.array(sfn.JsonPath.stringAt('$.eipAllocationId')),
-      },
-      iamResources: ['*'],
-      resultSelector: {
-        'blueInstanceId.$': '$.Addresses[0].InstanceId',
-      },
-      resultPath: '$.blue',
-    });
-
-    // 3. SetDesiredCapacity2 (SDK integration: AutoScaling)
-    const setDesiredCapacity2 = new tasks.CallAwsService(this, 'SetDesiredCapacity2', {
-      service: 'autoscaling',
-      action: 'setDesiredCapacity',
-      parameters: {
-        AutoScalingGroupName: sfn.JsonPath.stringAt('$.asgName'),
-        DesiredCapacity: 2,
-      },
-      iamResources: ['*'],
-      resultPath: sfn.JsonPath.DISCARD,
-    });
-
-    // 4. WaitForGreenBoot + GetGreenInstanceId (polling loop)
-    const waitForGreenBoot = new sfn.Wait(this, 'WaitForGreenBoot', {
-      time: sfn.WaitTime.duration(cdk.Duration.seconds(30)),
-    });
-
-    const getGreenInstanceId = new tasks.LambdaInvoke(this, 'GetGreenInstanceId', {
-      lambdaFunction: findGreenLambda,
-      payload: sfn.TaskInput.fromObject({
-        'asgName.$': '$.asgName',
-        'blueInstanceId.$': '$.blue.blueInstanceId',
-      }),
-      resultSelector: {
-        'found.$': '$.Payload.found',
-        'instanceId.$': '$.Payload.instanceId',
-        'publicIp.$': '$.Payload.publicIp',
-      },
-      resultPath: '$.green',
-    });
-
-    const checkGreenFound = new sfn.Choice(this, 'CheckGreenFound')
-      .when(sfn.Condition.booleanEquals('$.green.found', true),
-        // 5. GetGreenPublicIp — already have publicIp from findGreen Lambda
-        new sfn.Pass(this, 'GreenFound'))
-      .otherwise(waitForGreenBoot);
-
-    // 5. We already have green.publicIp from the findGreen Lambda, so skip separate DescribeInstances
-
-    // 6. HealthCheck (Lambda invoke + polling loop)
-    const initHealthCheckRetry = new sfn.Pass(this, 'InitHealthCheckRetry', {
-      result: sfn.Result.fromObject({}),
-      resultPath: '$.healthResult',
-    });
-
-    const waitForHealthCheck = new sfn.Wait(this, 'WaitForHealthCheck', {
-      time: sfn.WaitTime.duration(cdk.Duration.seconds(10)),
-    });
-
-    const healthCheck = new tasks.LambdaInvoke(this, 'HealthCheck', {
-      lambdaFunction: healthCheckLambda,
-      payload: sfn.TaskInput.fromObject({
-        'instanceIp.$': '$.green.publicIp',
-        'port.$': '$.healthCheckPort',
-        'path.$': '$.healthCheckPath',
-      }),
-      resultSelector: {
-        'healthy.$': '$.Payload.healthy',
-      },
-      resultPath: '$.healthResult',
-    });
-
-    const incrementRetryCount = new sfn.Pass(this, 'IncrementRetryCount', {
-      parameters: {
-        'eipAllocationId.$': '$.eipAllocationId',
-        'asgName.$': '$.asgName',
-        'healthCheckPort.$': '$.healthCheckPort',
-        'healthCheckPath.$': '$.healthCheckPath',
-        'maxRetries.$': '$.maxRetries',
-        'retryCount.$': 'States.MathAdd($.retryCount, 1)',
-        'blue.$': '$.blue',
-        'green.$': '$.green',
-        'healthResult.$': '$.healthResult',
-      },
-    });
-
-    // 7. SwapEIP (SDK integration: EC2 AssociateAddress)
-    const swapEip = new tasks.CallAwsService(this, 'SwapEIP', {
-      service: 'ec2',
-      action: 'associateAddress',
-      parameters: {
-        AllocationId: sfn.JsonPath.stringAt('$.eipAllocationId'),
-        InstanceId: sfn.JsonPath.stringAt('$.green.instanceId'),
-        AllowReassociation: true,
-      },
-      iamResources: ['*'],
-      resultPath: sfn.JsonPath.DISCARD,
-    });
-
-    // 8. TerminateBlue (SDK integration: EC2 TerminateInstances)
-    const terminateBlue = new tasks.CallAwsService(this, 'TerminateBlue', {
-      service: 'ec2',
-      action: 'terminateInstances',
-      parameters: {
-        InstanceIds: sfn.JsonPath.array(sfn.JsonPath.stringAt('$.blue.blueInstanceId')),
-      },
-      iamResources: ['*'],
-      resultPath: sfn.JsonPath.DISCARD,
-    });
-
-    // 9. SetDesiredCapacity1 (SDK integration: AutoScaling)
-    const setDesiredCapacity1 = new tasks.CallAwsService(this, 'SetDesiredCapacity1', {
-      service: 'autoscaling',
-      action: 'setDesiredCapacity',
-      parameters: {
-        AutoScalingGroupName: sfn.JsonPath.stringAt('$.asgName'),
-        DesiredCapacity: 1,
-      },
-      iamResources: ['*'],
-      resultPath: sfn.JsonPath.DISCARD,
-    });
-
-    // 10. DeploySuccess
-    const deploySuccess = new sfn.Succeed(this, 'DeploySuccess');
-
-    // --- Task 4.4: Rollback Flow ---
-
-    // Rollback: Restore EIP to Blue
-    const rollbackRestoreEip = new tasks.CallAwsService(this, 'RollbackRestoreEIP', {
-      service: 'ec2',
-      action: 'associateAddress',
-      parameters: {
-        AllocationId: sfn.JsonPath.stringAt('$.eipAllocationId'),
-        InstanceId: sfn.JsonPath.stringAt('$.blue.blueInstanceId'),
-        AllowReassociation: true,
-      },
-      iamResources: ['*'],
-      resultPath: sfn.JsonPath.DISCARD,
-    });
-
-    // Rollback: Terminate Green
-    const rollbackTerminateGreen = new tasks.CallAwsService(this, 'RollbackTerminateGreen', {
-      service: 'ec2',
-      action: 'terminateInstances',
-      parameters: {
-        InstanceIds: sfn.JsonPath.array(sfn.JsonPath.stringAt('$.green.instanceId')),
-      },
-      iamResources: ['*'],
-      resultPath: sfn.JsonPath.DISCARD,
-    });
-
-    // Rollback: Set desired capacity back to 1
-    const rollbackSetDesired1 = new tasks.CallAwsService(this, 'RollbackSetDesiredCapacity1', {
-      service: 'autoscaling',
-      action: 'setDesiredCapacity',
-      parameters: {
-        AutoScalingGroupName: sfn.JsonPath.stringAt('$.asgName'),
-        DesiredCapacity: 1,
-      },
-      iamResources: ['*'],
-      resultPath: sfn.JsonPath.DISCARD,
-    });
-
-    const deployFailed = new sfn.Fail(this, 'DeployFailed', {
-      cause: 'Deployment failed, rolled back to Blue',
-    });
-
-    // Rollback chains
-    rollbackRestoreEip.next(rollbackTerminateGreen);
-    rollbackTerminateGreen.next(rollbackSetDesired1);
-    rollbackSetDesired1.next(deployFailed);
-
-    // Health check retry exceeded → rollback (terminate Green, no EIP restore needed)
-    const healthCheckTimedOut = new sfn.Pass(this, 'HealthCheckTimedOut', {
-      resultPath: '$.error',
-      result: sfn.Result.fromObject({ cause: 'Health check max retries exceeded' }),
-    });
-    healthCheckTimedOut.next(rollbackTerminateGreen);
-
-    // Health check result check
-    const checkHealthResult = new sfn.Choice(this, 'CheckHealthResult')
-      .when(sfn.Condition.booleanEquals('$.healthResult.healthy', true), swapEip)
-      .when(
-        sfn.Condition.numberGreaterThanEqualsJsonPath('$.retryCount', '$.maxRetries'),
-        healthCheckTimedOut,
-      )
-      .otherwise(incrementRetryCount);
-
-    // Wire health check polling loop
-    incrementRetryCount.next(waitForHealthCheck);
-    waitForHealthCheck.next(healthCheck);
-    healthCheck.next(checkHealthResult);
-
-    // Catch clauses (Task 4.4)
-    // Before EIP swap: health check or setDesired2 failure → terminate Green → desired=1 → Fail
-    setDesiredCapacity2.addCatch(rollbackTerminateGreen, { resultPath: '$.error' });
-
-    // EIP swap failure → restore EIP to Blue → terminate Green → desired=1 → Fail
-    swapEip.addCatch(rollbackRestoreEip, { resultPath: '$.error' });
-
-    // Blue termination failure → desired=1 → Fail (EIP already on Green)
-    terminateBlue.addCatch(rollbackSetDesired1, { resultPath: '$.error' });
-
-    // Wire main flow
-    const greenFoundState = getGreenInstanceId.next(checkGreenFound);
-    waitForGreenBoot.next(greenFoundState);
-
-    const definition = getDeploymentParams
-      .next(getBlueInstanceId)
-      .next(setDesiredCapacity2)
-      .next(waitForGreenBoot);
-
-    // GreenFound → initHealthCheckRetry → waitForHealthCheck → healthCheck → checkHealthResult
-    // Re-wire: CheckGreenFound's "true" branch goes to health check init
-    // We need to set the GreenFound pass state to chain into health check
-    // The GreenFound pass state was created in the Choice; chain it forward
-    const greenFoundNode = this.node.findChild('GreenFound') as sfn.Pass;
-    greenFoundNode.next(initHealthCheckRetry);
-    initHealthCheckRetry.next(waitForHealthCheck);
-
-    // SwapEIP → TerminateBlue → SetDesiredCapacity1 → DeploySuccess
-    swapEip.next(terminateBlue);
-    terminateBlue.next(setDesiredCapacity1);
-    setDesiredCapacity1.next(deploySuccess);
-
-    // --- Task 4.5: Register State Machine ---
-    const stateMachine = new sfn.StateMachine(this, 'DeployStateMachine', {
-      definitionBody: sfn.DefinitionBody.fromChainable(definition),
-      timeout: cdk.Duration.minutes(15),
-    });
-
-    // Task 4.1: Grant Step Functions role the required permissions
-    stateMachine.addToRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'ec2:DescribeAddresses',
-        'ec2:AssociateAddress',
-        'ec2:DescribeInstances',
-        'ec2:TerminateInstances',
-        'autoscaling:SetDesiredCapacity',
-        'autoscaling:DescribeAutoScalingGroups',
-      ],
-      resources: ['*'],
-    }));
-    healthCheckLambda.grantInvoke(stateMachine);
-    findGreenLambda.grantInvoke(stateMachine);
-
-    new cdk.CfnOutput(this, 'DeployStateMachineArn', {
-      value: stateMachine.stateMachineArn,
-    });
-
-    // =========================================================
-    // Custom Resource: Auto-trigger deploy on cdk deploy
-    // =========================================================
-
-    const triggerDeployLambda = new lambda_nodejs.NodejsFunction(this, 'TriggerDeployFunction', {
-      entry: path.join(__dirname, '../lambda/trigger-deploy/index.ts'),
-      handler: 'handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
-      timeout: cdk.Duration.minutes(15),
-    });
-
-    stateMachine.grantStartExecution(triggerDeployLambda);
-    stateMachine.grantRead(triggerDeployLambda);
-
-    const deployInput = JSON.stringify({
-      eipAllocationId: eip.attrAllocationId,
-      asgName: asg.autoScalingGroupName,
-      healthCheckPort: 8080,
-      healthCheckPath: '/',
-      maxRetries: 40,
-    });
-
-    new cdk.CustomResource(this, 'DeployTrigger', {
-      serviceToken: triggerDeployLambda.functionArn,
-      properties: {
-        StateMachineArn: stateMachine.stateMachineArn,
-        Input: deployInput,
-        // Always trigger on every cdk deploy
-        DeployTrigger: new Date().toISOString(),
-      },
-    });
   }
 }

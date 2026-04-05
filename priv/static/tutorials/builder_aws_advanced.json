@@ -21,12 +21,12 @@
       ["add_object", "focus", {"width": 1.25, "hand_index": 11}],
       ["add_object", "focus", {"width": 0.75, "draw_index": 13}],
       ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
-        "text": "7p 8p 9p に 6p を足すと\nCI/CD Kan になります。\nこの役は門前なら 3飜です。"
+        "text": "七筒(CodeCommit) 八筒(CodeBuild) 九筒(CodeDeploy) に\n六筒(CloudFormation) を足すと\nCI/CD Kan になります。\nこの役は門前なら 3飜です。"
       }],
       ["force_event", ["press_button", "east", "cicd_ankan"]],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.38, "width": 5.5, "x": 9.5, "y": 6,
-        "text": "嶺上の 5s で 3s 4s 5s も完成しました。\nこれは 2飜役の RAG Agent です。\nさらに嶺上開花と\n形のよい平和も付きます。\n(クリックで続行)"
+        "text": "嶺上の 五索(Bedrock) で\n三索(S3) 四索(Bedrock AgentCore) 五索(Bedrock) も完成しました。\nこれは 2飜役の RAG Agent です。\nさらに嶺上開花と\n形のよい平和も付きます。\n(クリックで続行)"
       }],
       ["await_click"],
       ["clear_objects"],
@@ -47,12 +47,12 @@
         "title": "3飜以上のAWS役 1/2",
         "width": 15.2, "height": 14.1, "x": 0.9, "y": 1.0, "columns": 2,
         "items": [
-          {"title": "CI/CD Kan", "body": "6p / 7p / 8p / 9p を使う 3飜役。門前ならこちら。", "example_tiles": ["6p", "7p", "8p", "9p"]},
+          {"title": "CI/CD Kan", "body": "六筒(CloudFormation) / 七筒(CodeCommit) / 八筒(CodeBuild) / 九筒(CodeDeploy) を使う 3飜役。門前ならこちら。", "example_tiles": ["6p", "7p", "8p", "9p"]},
           {"title": "CI/CD Kan Open", "body": "CI/CD Kan を鳴いて作った形。2飜。", "example_tiles": [{"tile": "6p", "attrs": ["sideways"]}, "7p", "8p", "9p"]},
-          {"title": "Web Application Kan", "body": "3p / 2m または 3m / 7s / 9s を使う 3飜役。門前ならこちら。", "example_tiles": ["3p", "3m", "7s", "9s"]},
+          {"title": "Web Application Kan", "body": "三筒(ELB) / 二萬(EC2) または 三萬(ECS) / 七索(Aurora) / 九索(ElastiCache) を使う 3飜役。門前ならこちら。", "example_tiles": ["3p", "3m", "7s", "9s"]},
           {"title": "Web Application Kan Open", "body": "Web Application Kan を鳴いて作った形。2飜。", "example_tiles": [{"tile": "3p", "attrs": ["sideways"]}, "3m", "7s", "9s"]},
-          {"title": "Blue/Green Deploy Kan", "body": "3p / 3m / 6m / 7s を使う 3飜役。門前限定。", "example_tiles": ["3p", "3m", "6m", "7s"]},
-          {"title": "Serverlesspresso", "body": "2p / 1m / 8s と 8m / 7m / 1m をまとめて使う 3飜役。門前限定。", "example_tiles": ["2p", "1m", "8s", "8m", "7m", "1m"]},
+          {"title": "Blue/Green Deploy Kan", "body": "三筒(ELB) / 三萬(ECS) / 六萬(ECR) / 七索(Aurora) を使う 3飜役。門前限定。", "example_tiles": ["3p", "3m", "6m", "7s"]},
+          {"title": "Serverlesspresso", "body": "二筒(API Gateway) / 一萬(Lambda) / 八索(DynamoDB) と 八萬(EventBridge) / 七萬(Step Functions) / 一萬(Lambda) をまとめて使う 3飜役。門前限定。", "example_tiles": ["2p", "1m", "8s", "8m", "7m", "1m"]},
           {"title": "AWS Redundancy", "body": "同じ AWS役の面子を2つ作る 3飜役。門前限定。", "example_tiles": ["4p", "5p", "3s", "4p", "5p", "3s"]},
           {"title": "AWS 3AZ", "body": "同じ AWS役の面子を3つ作る 3飜役。門前限定。", "example_tiles": ["4p", "5p", "3s", "4p", "5p", "3s", "4p", "5p", "3s"]}
         ],
@@ -65,7 +65,7 @@
         "width": 15.2, "height": 14.1, "x": 0.9, "y": 1.0, "columns": 2,
         "items": [
           {"title": "DR Architecture", "body": "特定の七対子パターン + 風牌2組で作る AWS役満。門前限定。", "example_tiles": ["5p", "5p", "3p", "3p", "2m", "2m", "7s", "7s", "3s", "3s", "1z", "1z", "2z", "2z"]},
-          {"title": "AWS All Green", "body": "1s 2s 3s 4s 5s 6s と 6z だけで作る AWS役満。", "example_tiles": ["1s", "2s", "3s", "1s", "2s", "3s", "4s", "5s", "6s", "4s", "5s", "6s", "6z", "6z"]}
+          {"title": "AWS All Green", "body": "一索(Storage Gateway) 二索(EFS) 三索(S3) 四索(Bedrock AgentCore) 五索(Bedrock) 六索(SageMaker) と 六字(Cost Explorer) だけで作る AWS役満。", "example_tiles": ["1s", "2s", "3s", "1s", "2s", "3s", "4s", "5s", "6s", "4s", "5s", "6s", "6z", "6z"]}
         ],
         "footer": "1-2飜は Tutorial 1 と 2 で確認できます。クリックで終了"
       }],
